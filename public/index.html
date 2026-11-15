@@ -1081,7 +1081,9 @@
     <div class="modal-card">
       <div class="modal-head">
         <div class="modal-title">Invite Card Created</div>
-        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-ref-result')">✕</button>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-ref-result')" aria-label="Close">
+          <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div>
         <div class="form-group">
@@ -1110,7 +1112,9 @@
     <div class="modal-card">
       <div class="modal-head">
         <div class="modal-title">Top-Up User Balance</div>
-        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-topup')">✕</button>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-topup')" aria-label="Close">
+          <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <form onsubmit="handleTopupSubmit(event)">
         <input type="hidden" id="topup-user-id">
@@ -1139,7 +1143,9 @@
     <div class="modal-card">
       <div class="modal-head">
         <div class="modal-title">Extend License Key</div>
-        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-extend')">✕</button>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-extend')" aria-label="Close">
+          <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <form onsubmit="handleExtendSubmit(event)">
         <input type="hidden" id="extend-key-id">
