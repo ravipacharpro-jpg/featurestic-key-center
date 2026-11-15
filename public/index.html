@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Featurestic Key Center — Phantom X</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('fkc_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    /* ============================================================
+       PHANTOM X — NEON PURPLE (PREMIUM GAMING UI THEME)
+       ============================================================ */
+    :root, [data-theme="dark"] {
+      --bg: #090713;
+      --bg-secondary: #100C1C;
+      --card-bg: #171027;
+      --sidebar-bg: #0D0918;
+      --primary: #A855F7;
+      --secondary: #EC4899;
+      --accent: #C084FC;
+      --border: #35234A;
+      --border-glow: rgba(168, 85, 247, 0.4);
+      --text-primary: #F8F5FF;
+      --text-secondary: #A99BBE;
+      --text-muted: #6C5B83;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --neon-glow: rgba(168, 85, 247, 0.28);
+      --neon-glow-pink: rgba(236, 72, 153, 0.22);
+      --grad-primary: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+      --grad-surface: linear-gradient(180deg, rgba(23, 16, 39, 0.94) 0%, rgba(16, 12, 28, 0.98) 100%);
+      --card-shadow: 0 10px 30px rgba(9, 7, 19, 0.8), 0 0 20px rgba(168, 85, 247, 0.12);
+    }
+
+    [data-theme="light"] {
+      --bg: #F5F0FF;
+      --bg-secondary: #EEE7FA;
+      --card-bg: #FFFFFF;
+      --sidebar-bg: #FAF7FF;
+      --primary: #9333EA;
+      --secondary: #DB2777;
+      --accent: #A855F7;
+      --border: #E4D7F5;
+      --border-glow: rgba(147, 51, 234, 0.3);
+      --text-primary: #211333;
+      --text-secondary: #796A8B;
+      --text-muted: #A192B3;
+      --success: #059669;
+      --warning: #D97706;
+      --error: #DC2626;
+      --neon-glow: rgba(147, 51, 234, 0.14);
+      --neon-glow-pink: rgba(219, 39, 119, 0.12);
+      --grad-primary: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
+      --grad-surface: linear-gradient(180deg, #FFFFFF 0%, #FAF7FF 100%);
+      --card-shadow: 0 10px 25px rgba(147, 51, 234, 0.08);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Rajdhani', -apple-system, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+      background-image: 
+        radial-gradient(ellipse 800px 500px at 10% 0%, var(--neon-glow), transparent 70%),
+        radial-gradient(ellipse 600px 400px at 90% 100%, var(--neon-glow-pink), transparent 70%);
+      background-attachment: fixed;
+    }
+
+    code, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--grad-primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px var(--neon-glow);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px var(--neon-glow), 0 0 12px var(--secondary);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      background: rgba(168, 85, 247, 0.08);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: rgba(168, 85, 247, 0.16);
+      border-color: var(--primary);
+    }
+    .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; border-color: rgba(239, 68, 68, 0.3); }
+    .btn-danger:hover { background: #EF4444; color: #FFF; }
+    .btn-success { background: rgba(16, 185, 129, 0.15); color: #10B981; border-color: rgba(16, 185, 129, 0.3); }
+
+    /* Inputs */
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control, .form-select {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      padding: 10px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--neon-glow);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      border-color: var(--border-glow);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-superadmin { background: rgba(236, 72, 153, 0.2); color: #EC4899; border: 1px solid rgba(236, 72, 153, 0.4); }
+    .badge-owner { background: rgba(168, 85, 247, 0.2); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-admin { background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-reseller { background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-active { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+    .badge-banned { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    .badge-expired { background: rgba(169, 155, 190, 0.15); color: var(--text-secondary); }
+
+    /* Auth Screen */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .auth-box {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 32px 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px var(--neon-glow);
+      text-align: center;
+      position: relative;
+    }
+    .auth-logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px var(--neon-glow);
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-tab.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* App Shell */
+    #app-shell {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 64px;
+      background: rgba(9, 7, 19, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      transition: all 0.3s;
+    }
+    [data-theme="light"] .topbar {
+      background: rgba(245, 240, 255, 0.88);
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .topbar-brand {
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Credits Pill */
+    .credits-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Connect Link Bar in Topbar */
+    .connect-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px 6px 4px 10px;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .connect-url {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* God Mode Banner */
+    #godmode-banner {
+      display: none;
+      background: linear-gradient(90deg, #EC4899 0%, #A855F7 100%);
+      color: #FFF;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 16px var(--neon-glow);
+    }
+
+    /* Main Container */
+    .main-layout {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: rgba(168, 85, 247, 0.08);
+      color: var(--text-primary);
+    }
+    .nav-btn.active {
+      background: rgba(168, 85, 247, 0.16);
+      color: var(--primary);
+      border-color: var(--border-glow);
+      box-shadow: 0 4px 14px var(--neon-glow);
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--card-shadow);
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(168, 85, 247, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+    .stat-val { font-size: 26px; font-weight: 800; color: var(--text-primary); }
+    .stat-lbl { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background: var(--bg-secondary);
+      padding: 12px 16px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(168, 85, 247, 0.04); }
+
+    /* Key Token Box */
+    .key-token {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(168, 85, 247, 0.08);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      user-select: all;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px var(--neon-glow);
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-title { font-size: 18px; font-weight: 800; text-transform: uppercase; color: var(--text-primary); }
+
+    /* Toast */
+    #toast-box {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      color: var(--text-primary);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 20px var(--neon-glow);
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .main-layout { flex-direction: column; padding: 12px; gap: 14px; }
+      .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding-bottom: 6px; }
+      .nav-btn { padding: 8px 12px; font-size: 14px; white-space: nowrap; }
+      .topbar { padding: 0 12px; height: 58px; }
+      .connect-box { display: none; }
+      .stat-card { padding: 14px; }
+      .stat-val { font-size: 20px; }
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN ==================== -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <svg class="icon" style="width:32px; height:32px; stroke:#FFF" viewBox="0 0 24 24">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <h2 style="font-size:24px; font-weight:800; letter-spacing:1px">FEATURESTIC KEY CENTER</h2>
+      <p style="color:var(--text-secondary); font-size:14px; margin-top:4px">Phantom X — Enterprise Gaming License Hub</p>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" onclick="switchAuthTab('login')">LOGIN</button>
+        <button type="button" class="auth-tab" onclick="switchAuthTab('referral')">REDEEM INVITE</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="form-login" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" id="login-username" class="form-control" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <button type="submit" id="btn-login-submit" class="btn btn-primary" style="width:100%; margin-top:10px; height:46px">
+          AUTHENTICATE & ENTER
+        </button>
+      </form>
+
+      <!-- Referral Register Form -->
+      <form id="form-referral" onsubmit="handleRegisterReferral(event)" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Invite / Referral Code</label>
+          <input type="text" id="reg-ref-code" class="form-control font-mono" placeholder="REF-ADM-XXXXXX" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Choose Username</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="New username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Create Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="New password" required>
+        </div>
+        <button type="submit" id="btn-reg-submit" class="btn btn-primary" style="width:100%; margin-top:10px; height:46px">
+          CREATE ACCOUNT WITH CREDITS
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; font-size:12px; color:var(--text-muted)">
+        Copyright @2026 Featurestic Leaks • High Speed Zero Load System
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN APP SHELL ==================== -->
+  <div id="app-shell">
+
+    <!-- Super Admin God Mode Banner -->
+    <div id="godmode-banner">
+      <div style="display:flex; align-items:center; gap:8px">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-5-6.5 5 2-7.5-5.5-4.5h7z"/></svg>
+        <span>SUPERADMIN GOD MODE: Impersonating <span id="godmode-target-name" class="font-mono">...</span></span>
+      </div>
+      <button class="btn btn-sm btn-ghost" style="background:#FFF; color:#000; border:none" onclick="exitGodMode()">
+        EXIT GOD MODE
+      </button>
+    </div>
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-brand">
+          <svg class="icon" style="stroke:var(--primary)" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="brand-header-text">FEATURESTIC</span>
+        </div>
+        <span id="user-role-badge" class="badge badge-owner">Owner</span>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Connect URL Box with 1-click copy -->
+        <div class="connect-box" id="topbar-connect-box" title="Unique Connect Endpoint for this Loader">
+          <span style="color:var(--text-muted); font-size:11px">CONNECT:</span>
+          <span id="current-connect-url" class="connect-url font-mono">/c/...</span>
+          <button type="button" class="btn btn-sm btn-ghost" onclick="copyConnectUrl()" style="padding:4px 8px; font-size:11px">
+            COPY
+          </button>
+        </div>
+
+        <!-- Credits Pill -->
+        <div class="credits-pill">
+          <span>💎</span>
+          <span id="user-credits-display">♾️</span>
+        </div>
+
+        <!-- Theme Toggle (Dark / Light) -->
+        <button type="button" class="btn btn-ghost btn-sm" onclick="toggleTheme()" title="Toggle Dark / Light Mode" style="padding:6px 10px">
+          <svg class="icon theme-sun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon theme-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+
+        <!-- Logout -->
+        <button type="button" class="btn btn-ghost btn-sm" onclick="logout()" title="Logout" style="padding:6px 10px">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="main-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <button type="button" class="nav-btn active" data-tab="tab-keys" onclick="navTab('tab-keys')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <span>License Keys</span>
+        </button>
+
+        <button type="button" class="nav-btn" id="nav-btn-loaders" data-tab="tab-loaders" onclick="navTab('tab-loaders')">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>My Loaders</span>
+        </button>
+
+        <button type="button" class="nav-btn" data-tab="tab-referrals" onclick="navTab('tab-referrals')">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>Referral Cards</span>
+        </button>
+
+        <button type="button" class="nav-btn" id="nav-btn-users" data-tab="tab-users" onclick="navTab('tab-users')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Users & Resellers</span>
+        </button>
+
+        <button type="button" class="nav-btn" data-tab="tab-ledger" onclick="navTab('tab-ledger')">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Credit Passbook</span>
+        </button>
+
+        <button type="button" class="nav-btn" id="nav-btn-pricing" data-tab="tab-pricing" onclick="navTab('tab-pricing')">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Pricing Settings</span>
+        </button>
+      </aside>
+
+      <!-- Main Tab Content Container -->
+      <main class="content-area">
+
+        <!-- Top Live Stats Row -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+            <div>
+              <div id="stat-total-keys" class="stat-val font-mono">0</div>
+              <div class="stat-lbl">Total Licenses</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:var(--success); background:rgba(16,185,129,0.14)"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg></div>
+            <div>
+              <div id="stat-active-keys" class="stat-val font-mono">0</div>
+              <div class="stat-lbl">Active Valid Keys</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:var(--secondary); background:rgba(236,72,153,0.14)"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <div>
+              <div id="stat-total-devices" class="stat-val font-mono">0</div>
+              <div class="stat-lbl">Connected Devices</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:var(--warning); background:rgba(245,158,11,0.14)"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
+            <div>
+              <div id="stat-active-loaders" class="stat-val font-mono">0</div>
+              <div class="stat-lbl">Active Loaders</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 1: KEYS MANAGEMENT ==================== -->
+        <section id="tab-keys" class="tab-pane">
+          <!-- Generator Box -->
+          <div class="card" style="margin-bottom: 20px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px">
+              <div>
+                <h3 style="font-size:18px; font-weight:800; text-transform:uppercase">GENERATE LICENSES</h3>
+                <p style="font-size:13px; color:var(--text-secondary)">Issue single or batch licenses for your targeted loader</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px">
+                <label style="font-size:13px; color:var(--text-secondary)">TARGET LOADER:</label>
+                <select id="gen-loader-select" class="form-select font-mono" style="width:auto; padding:6px 12px; font-size:13px" onchange="onLoaderChange()">
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+            </div>
+
+            <form onsubmit="handleGenerateKeys(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; align-items:flex-end">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Duration</label>
+                <select id="gen-duration" class="form-select" onchange="toggleCustomDuration()">
+                  <option value="1d">1 Day</option>
+                  <option value="7d">7 Days</option>
+                  <option value="15d">15 Days</option>
+                  <option value="30d">30 Days</option>
+                  <option value="60d">60 Days</option>
+                  <option value="custom">Custom Days</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="group-custom-days" style="margin:0; display:none">
+                <label class="form-label">Custom Days</label>
+                <input type="number" id="gen-custom-days" class="form-control" min="1" max="999" value="90">
+              </div>
+
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Quantity (Batch)</label>
+                <input type="number" id="gen-quantity" class="form-control" min="1" max="100" value="1">
+              </div>
+
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Max Devices</label>
+                <input type="number" id="gen-max-devices" class="form-control" min="1" max="50" value="1" title="Single Device = 1, Shared = 2+">
+              </div>
+
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Prefix (Optional)</label>
+                <input type="text" id="gen-prefix" class="form-control font-mono" placeholder="FL" maxlength="8">
+              </div>
+
+              <button type="submit" id="btn-generate-submit" class="btn btn-primary" style="height:44px">
+                GENERATE NOW
+              </button>
+            </form>
+          </div>
+
+          <!-- Keys Table Card -->
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--border)">
+              <div style="display:flex; align-items:center; gap:12px">
+                <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Active Keys Registry</h3>
+                <span id="keys-count-badge" class="badge badge-owner font-mono">0 Keys</span>
+              </div>
+              <div style="display:flex; gap:10px">
+                <button type="button" class="btn btn-sm btn-ghost" onclick="copyBatchKeys()">
+                  📋 COPY ALL (WHATSAPP FORMAT)
+                </button>
+                <button type="button" class="btn btn-sm btn-ghost" onclick="loadKeys()">
+                  🔄 REFRESH
+                </button>
+              </div>
+            </div>
+
+            <div class="table-wrap" style="border:none">
+              <table>
+                <thead>
+                  <tr>
+                    <th>License Key</th>
+                    <th>Loader</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Devices</th>
+                    <th>Expiry Date</th>
+                    <th>Creator</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="keys-table-body">
+                  <tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted)">Loading keys...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 2: LOADERS MANAGER (OWNER) ==================== -->
+        <section id="tab-loaders" class="tab-pane" style="display:none">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-size:18px; font-weight:800; text-transform:uppercase; margin-bottom:6px">ADD NEW LOADER SLOT</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
+              Create a dedicated loader slot with its own short connect URL (`/c/slug`).
+            </p>
+
+            <form onsubmit="handleCreateLoader(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; align-items:flex-end">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Loader Name</label>
+                <input type="text" id="loader-input-name" class="form-control" placeholder="e.g. BGMI 64Bit V2" required>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Endpoint Slug (/c/slug)</label>
+                <input type="text" id="loader-input-slug" class="form-control font-mono" placeholder="e.g. bgmi64" required maxlength="30">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Package Name</label>
+                <input type="text" id="loader-input-pkg" class="form-control font-mono" value="com.pubg.imobile" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="height:44px">
+                + REGISTER LOADER
+              </button>
+            </form>
+          </div>
+
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border)">
+              <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Configured Loaders Fleet</h3>
+            </div>
+            <div class="table-wrap" style="border:none">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Loader Name</th>
+                    <th>Slug</th>
+                    <th>Dedicated Connect URL</th>
+                    <th>Package Name</th>
+                    <th>Maintenance</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="loaders-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 3: REFERRAL INVITES ==================== -->
+        <section id="tab-referrals" class="tab-pane" style="display:none">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-size:18px; font-weight:800; text-transform:uppercase; margin-bottom:6px">GENERATE INVITE CARD</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
+              Issue referral cards to onboard Admins or Resellers with pre-loaded balance.
+            </p>
+
+            <form onsubmit="handleCreateReferral(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; align-items:flex-end">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Target Role</label>
+                <select id="ref-target-role" class="form-select" onchange="toggleRefRoleOptions()">
+                  <option value="reseller">Reseller</option>
+                  <option value="admin">Admin (Sub-Admin)</option>
+                  <option value="owner" id="opt-ref-owner" style="display:none">Owner (Full Brand)</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Allocated Credits</label>
+                <input type="number" id="ref-credits" class="form-control" min="0" value="100" required>
+              </div>
+
+              <div class="form-group" id="group-ref-loaders" style="margin:0; display:none">
+                <label class="form-label">Allowed Loader Slots</label>
+                <input type="number" id="ref-max-loaders" class="form-control" min="1" max="50" value="5">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="height:44px">
+                GENERATE INVITE CARD
+              </button>
+            </form>
+          </div>
+
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border)">
+              <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Issued Referral Cards</h3>
+            </div>
+            <div class="table-wrap" style="border:none">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Invite Code</th>
+                    <th>Role Granted</th>
+                    <th>Credits Attached</th>
+                    <th>Status</th>
+                    <th>Redeemed By</th>
+                    <th>Created At</th>
+                    <th style="text-align:right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="referrals-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 4: USERS & RESELLERS ==================== -->
+        <section id="tab-users" class="tab-pane" style="display:none">
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center">
+              <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Managed Accounts & Sub-Vendors</h3>
+              <button class="btn btn-sm btn-ghost" onclick="loadUsers()">🔄 REFRESH</button>
+            </div>
+            <div class="table-wrap" style="border:none">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Current Balance</th>
+                    <th>Keys Issued</th>
+                    <th>Status</th>
+                    <th>Created Date</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 5: CREDIT LEDGER ==================== -->
+        <section id="tab-ledger" class="tab-pane" style="display:none">
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border)">
+              <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Credit Passbook & Audit Ledger</h3>
+              <p style="font-size:13px; color:var(--text-secondary); margin-top:2px">100% transparent audit of every balance deduction & top-up</p>
+            </div>
+            <div class="table-wrap" style="border:none">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Amount (+/-)</th>
+                    <th>Balance After</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody id="ledger-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 6: PRICING SETTINGS (OWNER) ==================== -->
+        <section id="tab-pricing" class="tab-pane" style="display:none">
+          <div class="card">
+            <h3 style="font-size:18px; font-weight:800; text-transform:uppercase; margin-bottom:6px">CREDIT PRICING CONFIGURATION</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px">
+              Define exact credit cost deducted when your Admins or Resellers generate keys.
+            </p>
+
+            <form onsubmit="handleSavePricing(event)" style="max-width:600px; display:flex; flex-direction:column; gap:14px">
+              <div class="form-group">
+                <label class="form-label">Brand Display Name</label>
+                <input type="text" id="pricing-brand-name" class="form-control" required>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">1 Day Cost</label>
+                  <input type="number" id="pricing-1d" class="form-control" min="1" required>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">7 Days Cost</label>
+                  <input type="number" id="pricing-7d" class="form-control" min="1" required>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">15 Days Cost</label>
+                  <input type="number" id="pricing-15d" class="form-control" min="1" required>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">30 Days Cost</label>
+                  <input type="number" id="pricing-30d" class="form-control" min="1" required>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">60 Days Cost</label>
+                  <input type="number" id="pricing-60d" class="form-control" min="1" required>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Custom (Per Day)</label>
+                  <input type="number" id="pricing-custom" class="form-control" min="1" required>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="align-self:flex-start; margin-top:10px">
+                SAVE PRICING CONFIG
+              </button>
+            </form>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Top-Up Modal -->
+  <div id="modal-topup" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title">Top-Up User Balance</div>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-topup')">✕</button>
+      </div>
+      <form onsubmit="handleTopupSubmit(event)">
+        <input type="hidden" id="topup-user-id">
+        <div class="form-group">
+          <label class="form-label">Recipient User</label>
+          <input type="text" id="topup-user-name" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Credits to Grant</label>
+          <input type="number" id="topup-amount" class="form-control" min="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note / Remark</label>
+          <input type="text" id="topup-note" class="form-control" placeholder="e.g. Monthly Topup">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('modal-topup')">CANCEL</button>
+          <button type="submit" class="btn btn-primary">CONFIRM TOP-UP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Extend Key Modal -->
+  <div id="modal-extend" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title">Extend License Key</div>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-extend')">✕</button>
+      </div>
+      <form onsubmit="handleExtendSubmit(event)">
+        <input type="hidden" id="extend-key-id">
+        <div class="form-group">
+          <label class="form-label">License Key</label>
+          <input type="text" id="extend-key-token" class="form-control font-mono" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Additional Days to Add</label>
+          <input type="number" id="extend-days" class="form-control" min="1" max="999" value="7" required>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('modal-extend')">CANCEL</button>
+          <button type="submit" class="btn btn-primary">EXTEND EXPIRY</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-box"></div>
+
+  <!-- ==================== FRONTEND APPLICATION LOGIC ==================== -->
+  <script>
+    /* State */
+    let _token = localStorage.getItem('fkc_token') || '';
+    let _user = null;
+    let _loaders = [];
+    let _activeLoader = null;
+    let _currentTab = 'tab-keys';
+    let _keysCache = [];
+
+    // Toast
+    function toast(msg, type = 'info') {
+      const box = document.getElementById('toast-box');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.innerHTML = `<span>⚡</span> <span>${msg}</span>`;
+      box.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // Modal helpers
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Theme Switcher
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nxt = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nxt);
+      localStorage.setItem('fkc_theme', nxt);
+
+      const isLight = nxt === 'light';
+      document.querySelectorAll('.theme-sun').forEach(el => el.style.display = isLight ? 'inline-block' : 'none');
+      document.querySelectorAll('.theme-moon').forEach(el => el.style.display = isLight ? 'none' : 'inline-block');
+      toast(`Switched to Phantom X ${nxt.toUpperCase()} Mode`);
+    }
+
+    // Fast API wrapper
+    async function api(endpoint, options = {}) {
+      options.headers = options.headers || {};
+      if (_token) options.headers['Authorization'] = `Bearer ${_token}`;
+      options.headers['Content-Type'] = 'application/json';
+
+      const res = await fetch(endpoint, options);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Server Request Failed');
+      return data;
+    }
+
+    // Navigation Tabs
+    function navTab(tabId) {
+      _currentTab = tabId;
+      document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      const pane = document.getElementById(tabId);
+      if (pane) pane.style.display = 'block';
+
+      const btn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
+      if (btn) btn.classList.add('active');
+
+      if (tabId === 'tab-keys') loadKeys();
+      else if (tabId === 'tab-loaders') loadLoaders();
+      else if (tabId === 'tab-referrals') loadReferrals();
+      else if (tabId === 'tab-users') loadUsers();
+      else if (tabId === 'tab-ledger') loadLedger();
+      else if (tabId === 'tab-pricing') loadPricing();
+    }
+
+    function switchAuthTab(type) {
+      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+      if (type === 'login') {
+        event.target.classList.add('active');
+        document.getElementById('form-login').style.display = 'block';
+        document.getElementById('form-referral').style.display = 'none';
+      } else {
+        event.target.classList.add('active');
+        document.getElementById('form-login').style.display = 'none';
+        document.getElementById('form-referral').style.display = 'block';
+      }
+    }
+
+    // Authentication Handlers
+    async function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-username').value;
+      const p = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login-submit');
+      btn.disabled = true;
+      btn.textContent = 'AUTHENTICATING...';
+
+      try {
+        const res = await api('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ username: u, password: p })
+        });
+        _token = res.token;
+        _user = res.user;
+        localStorage.setItem('fkc_token', _token);
+        initApp();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'AUTHENTICATE & ENTER';
+      }
+    }
+
+    async function handleRegisterReferral(e) {
+      e.preventDefault();
+      const code = document.getElementById('reg-ref-code').value;
+      const u = document.getElementById('reg-username').value;
+      const p = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-reg-submit');
+      btn.disabled = true;
+
+      try {
+        const res = await api('/api/auth/register-referral', {
+          method: 'POST',
+          body: JSON.stringify({ code, username: u, password: p })
+        });
+        _token = res.token;
+        _user = res.user;
+        localStorage.setItem('fkc_token', _token);
+        toast('Account successfully created!');
+        initApp();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('fkc_token');
+      location.reload();
+    }
+
+    // App Initializer
+    async function initApp() {
+      if (!_token) {
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('app-shell').style.display = 'none';
+        return;
+      }
+
+      try {
+        const res = await api('/api/auth/me');
+        _user = res.user;
+
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-shell').style.display = 'flex';
+
+        applyRolePermissions();
+        await loadLoaders();
+        loadStats();
+        navTab('tab-keys');
+      } catch (err) {
+        console.error('Init App Error', err);
+        logout();
+      }
+    }
+
+    function applyRolePermissions() {
+      const badge = document.getElementById('user-role-badge');
+      badge.textContent = _user.role.toUpperCase();
+      badge.className = `badge badge-${_user.role}`;
+
+      const creditsDisplay = document.getElementById('user-credits-display');
+      if (_user.role === 'owner' || _user.role === 'superadmin') {
+        creditsDisplay.textContent = '♾️ Unlimited';
+      } else {
+        creditsDisplay.textContent = `${_user.credits} Credits`;
+      }
+
+      // Permissions matrix
+      const isOwnerOrSuper = _user.role === 'owner' || _user.role === 'superadmin';
+      document.getElementById('nav-btn-loaders').style.display = isOwnerOrSuper ? 'flex' : 'none';
+      document.getElementById('nav-btn-pricing').style.display = isOwnerOrSuper ? 'flex' : 'none';
+      document.getElementById('nav-btn-users').style.display = (_user.role !== 'reseller') ? 'flex' : 'none';
+
+      // Referral roles
+      const optOwner = document.getElementById('opt-ref-owner');
+      if (optOwner) optOwner.style.display = (_user.role === 'superadmin') ? 'block' : 'none';
+    }
+
+    // Loaders
+    async function loadLoaders() {
+      try {
+        const res = await api('/api/loaders');
+        _loaders = res.loaders || [];
+
+        // Populate dropdown in Generator
+        const sel = document.getElementById('gen-loader-select');
+        sel.innerHTML = _loaders.map(l => `<option value="${l.id}" data-slug="${l.slug}">${l.loader_name} (/c/${l.slug})</option>`).join('');
+
+        if (_loaders.length > 0) {
+          _activeLoader = _loaders[0];
+          updateConnectUrlBox();
+        }
+
+        // Render Loaders Table
+        const tb = document.getElementById('loaders-table-body');
+        if (tb) {
+          if (_loaders.length === 0) {
+            tb.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted)">No loaders created yet. Click "+ Register Loader" above.</td></tr>`;
+          } else {
+            tb.innerHTML = _loaders.map(l => {
+              const fullUrl = `${location.origin}/c/${l.slug}`;
+              return `
+                <tr>
+                  <td><strong>${l.loader_name}</strong></td>
+                  <td><span class="font-mono" style="color:var(--primary)">${l.slug}</span></td>
+                  <td>
+                    <span class="key-token">${fullUrl}</span>
+                    <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${fullUrl}'); toast('Copied Connect Link!')">COPY</button>
+                  </td>
+                  <td class="font-mono" style="font-size:13px">${l.package_name}</td>
+                  <td>
+                    <button class="btn btn-sm ${l.maintenance ? 'btn-danger' : 'btn-ghost'}" onclick="toggleMaintenance(${l.id}, ${!l.maintenance})">
+                      ${l.maintenance ? 'PAUSED (MAINTENANCE)' : 'ONLINE'}
+                    </button>
+                  </td>
+                  <td style="text-align:right">
+                    <span class="badge badge-active font-mono">v${l.app_version}</span>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('loadLoaders err', err);
+      }
+    }
+
+    function onLoaderChange() {
+      const sel = document.getElementById('gen-loader-select');
+      const id = parseInt(sel.value);
+      _activeLoader = _loaders.find(l => l.id === id) || _loaders[0];
+      updateConnectUrlBox();
+    }
+
+    function updateConnectUrlBox() {
+      if (!_activeLoader) return;
+      const box = document.getElementById('topbar-connect-box');
+      const urlSpan = document.getElementById('current-connect-url');
+      const full = `${location.origin}/c/${_activeLoader.slug}`;
+      urlSpan.textContent = `/c/${_activeLoader.slug}`;
+      box.dataset.fullUrl = full;
+    }
+
+    function copyConnectUrl() {
+      const box = document.getElementById('topbar-connect-box');
+      if (box.dataset.fullUrl) {
+        navigator.clipboard.writeText(box.dataset.fullUrl);
+        toast('Copied Loader Connect URL!');
+      }
+    }
+
+    async function handleCreateLoader(e) {
+      e.preventDefault();
+      const name = document.getElementById('loader-input-name').value;
+      const slug = document.getElementById('loader-input-slug').value;
+      const pkg = document.getElementById('loader-input-pkg').value;
+
+      try {
+        await api('/api/loaders', {
+          method: 'POST',
+          body: JSON.stringify({ loader_name: name, slug, package_name: pkg })
+        });
+        toast('New Loader registered!');
+        document.getElementById('loader-input-name').value = '';
+        document.getElementById('loader-input-slug').value = '';
+        await loadLoaders();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    async function toggleMaintenance(id, state) {
+      try {
+        await api(`/api/loaders/${id}/maintenance`, {
+          method: 'PUT',
+          body: JSON.stringify({ maintenance: state })
+        });
+        toast('Maintenance status updated');
+        await loadLoaders();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    // Keys
+    function toggleCustomDuration() {
+      const val = document.getElementById('gen-duration').value;
+      document.getElementById('group-custom-days').style.display = val === 'custom' ? 'block' : 'none';
+    }
+
+    async function handleGenerateKeys(e) {
+      e.preventDefault();
+      if (!_activeLoader) {
+        toast('Please create or select a loader first!', 'error');
+        return;
+      }
+
+      const dur = document.getElementById('gen-duration').value;
+      const customDays = document.getElementById('gen-custom-days').value;
+      const qty = document.getElementById('gen-quantity').value;
+      const maxDev = document.getElementById('gen-max-devices').value;
+      const prefix = document.getElementById('gen-prefix').value;
+      const btn = document.getElementById('btn-generate-submit');
+      btn.disabled = true;
+
+      try {
+        const res = await api('/api/keys', {
+          method: 'POST',
+          body: JSON.stringify({
+            loader_id: _activeLoader.id,
+            duration_type: dur,
+            custom_days: customDays,
+            quantity: qty,
+            max_devices: maxDev,
+            prefix
+          })
+        });
+
+        toast(`Generated ${res.keys.length} licenses!`);
+        initApp(); // refresh balance & keys
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function loadKeys() {
+      const tb = document.getElementById('keys-table-body');
+      tb.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted)">Loading keys...</td></tr>`;
+
+      try {
+        const res = await api('/api/keys');
+        _keysCache = res.keys || [];
+        document.getElementById('keys-count-badge').textContent = `${_keysCache.length} Keys`;
+
+        if (_keysCache.length === 0) {
+          tb.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted)">No keys found. Generate keys using the box above!</td></tr>`;
+          return;
+        }
+
+        tb.innerHTML = _keysCache.map(k => {
+          const expText = k.expires_at ? new Date(k.expires_at).toLocaleString() : (k.first_used_at ? 'Expired' : 'Not Activated (Starts on 1st login)');
+          const statusClass = k.status === 'active' ? 'badge-active' : (k.status === 'banned' ? 'badge-banned' : 'badge-expired');
+
+          return `
+            <tr>
+              <td>
+                <span class="key-token">${k.user_key}</span>
+                <button class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${k.user_key}'); toast('Copied Key!')">COPY</button>
+              </td>
+              <td><strong>${k.loader_name}</strong></td>
+              <td><span class="badge badge-owner font-mono">${k.duration_days}D (${k.duration_type.toUpperCase()})</span></td>
+              <td><span class="badge ${statusClass}">${k.status.toUpperCase()}</span></td>
+              <td><span class="font-mono">${k.bound_count || 0} / ${k.max_devices}</span></td>
+              <td style="font-size:12px; color:var(--text-secondary)">${expText}</td>
+              <td style="font-size:13px">${k.creator_name}</td>
+              <td style="text-align:right">
+                <div style="display:inline-flex; gap:6px">
+                  <button class="btn btn-sm btn-ghost" title="Reset HWID / Unbind phone" onclick="resetHwid(${k.id})">RESET HWID</button>
+                  <button class="btn btn-sm btn-ghost" title="Extend Expiry" onclick="openExtendModal(${k.id}, '${k.user_key}')">+ EXTEND</button>
+                  <button class="btn btn-sm ${k.status === 'banned' ? 'btn-success' : 'btn-danger'}" onclick="toggleBan(${k.id})">
+                    ${k.status === 'banned' ? 'UNBAN' : 'BAN'}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tb.innerHTML = `<tr><td colspan="8" style="color:var(--error); text-align:center; padding:20px">${err.message}</td></tr>`;
+      }
+    }
+
+    async function resetHwid(id) {
+      if (!confirm('Unbind all devices from this key? Customer can re-login on new phone.')) return;
+      try {
+        await api(`/api/keys/${id}/reset-hwid`, { method: 'PUT' });
+        toast('HWID successfully reset!');
+        loadKeys();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    async function toggleBan(id) {
+      try {
+        const res = await api(`/api/keys/${id}/toggle-ban`, { method: 'PUT' });
+        toast(res.message);
+        loadKeys();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    function openExtendModal(id, token) {
+      document.getElementById('extend-key-id').value = id;
+      document.getElementById('extend-key-token').value = token;
+      openModal('modal-extend');
+    }
+
+    async function handleExtendSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('extend-key-id').value;
+      const days = document.getElementById('extend-days').value;
+
+      try {
+        const res = await api(`/api/keys/${id}/extend`, {
+          method: 'PUT',
+          body: JSON.stringify({ extra_days: days })
+        });
+        toast(res.message);
+        closeModal('modal-extend');
+        loadKeys();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    function copyBatchKeys() {
+      if (_keysCache.length === 0) return toast('No keys available to copy', 'error');
+      const lines = _keysCache.map((k, i) => `${i + 1}. Key: ${k.user_key} | Duration: ${k.duration_days} Days | Loader: ${k.loader_name}`);
+      const text = `🔥 FEATURESTIC LICENSES 🔥\n\n` + lines.join('\n') + `\n\nEnjoy Gaming!`;
+      navigator.clipboard.writeText(text);
+      toast('Copied all keys in formatted WhatsApp style!');
+    }
+
+    // Referral Cards
+    function toggleRefRoleOptions() {
+      const role = document.getElementById('ref-target-role').value;
+      document.getElementById('group-ref-loaders').style.display = role === 'owner' ? 'block' : 'none';
+    }
+
+    async function handleCreateReferral(e) {
+      e.preventDefault();
+      const role = document.getElementById('ref-target-role').value;
+      const credits = document.getElementById('ref-credits').value;
+      const loaders = document.getElementById('ref-max-loaders').value;
+
+      try {
+        const res = await api('/api/referrals', {
+          method: 'POST',
+          body: JSON.stringify({ target_role: role, credits_allocated: credits, max_loaders_allowed: loaders })
+        });
+        toast(`Invite Card created: ${res.referral.code}`);
+        initApp();
+        loadReferrals();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    async function loadReferrals() {
+      const tb = document.getElementById('referrals-table-body');
+      tb.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted)">Loading...</td></tr>`;
+
+      try {
+        const res = await api('/api/referrals');
+        const refs = res.referrals || [];
+        if (refs.length === 0) {
+          tb.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted)">No invite cards generated yet.</td></tr>`;
+          return;
+        }
+
+        tb.innerHTML = refs.map(r => `
+          <tr>
+            <td>
+              <span class="key-token">${r.code}</span>
+              <button class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${r.code}'); toast('Copied Invite Code!')">COPY</button>
+            </td>
+            <td><span class="badge badge-${r.target_role}">${r.target_role.toUpperCase()}</span></td>
+            <td><strong>${r.credits_allocated} Credits</strong></td>
+            <td><span class="badge ${r.status === 'pending' ? 'badge-active' : 'badge-banned'}">${r.status.toUpperCase()}</span></td>
+            <td>${r.used_by_name || '—'}</td>
+            <td style="font-size:12px; color:var(--text-secondary)">${new Date(r.created_at).toLocaleString()}</td>
+            <td style="text-align:right">
+              ${r.status === 'pending' ? `<button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${location.origin}/?ref=${r.code}'); toast('Copied Invite Link!')">COPY LINK</button>` : '—'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tb.innerHTML = `<tr><td colspan="7" style="color:var(--error); text-align:center; padding:20px">${err.message}</td></tr>`;
+      }
+    }
+
+    // Users & Resellers
+    async function loadUsers() {
+      const tb = document.getElementById('users-table-body');
+      tb.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted)">Loading users...</td></tr>`;
+
+      try {
+        const res = await api('/api/users');
+        const users = res.users || [];
+        if (users.length === 0) {
+          tb.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted)">No sub-users registered yet. Issue referral invites to onboard resellers!</td></tr>`;
+          return;
+        }
+
+        tb.innerHTML = users.map(u => `
+          <tr>
+            <td><strong>${u.username}</strong></td>
+            <td><span class="badge badge-${u.role}">${u.role.toUpperCase()}</span></td>
+            <td><strong style="color:var(--accent)">${u.credits} Credits</strong></td>
+            <td class="font-mono">${u.keys_generated || 0}</td>
+            <td><span class="badge ${u.status === 'active' ? 'badge-active' : 'badge-banned'}">${u.status.toUpperCase()}</span></td>
+            <td style="font-size:12px; color:var(--text-secondary)">${new Date(u.created_at).toLocaleDateString()}</td>
+            <td style="text-align:right">
+              <button class="btn btn-sm btn-ghost" onclick="openTopupModal(${u.id}, '${u.username}')">+ TOP-UP</button>
+              <button class="btn btn-sm ${u.status === 'blocked' ? 'btn-success' : 'btn-danger'}" onclick="toggleUserBlock(${u.id})">
+                ${u.status === 'blocked' ? 'UNBLOCK' : 'BLOCK'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tb.innerHTML = `<tr><td colspan="7" style="color:var(--error); text-align:center; padding:20px">${err.message}</td></tr>`;
+      }
+    }
+
+    function openTopupModal(id, username) {
+      document.getElementById('topup-user-id').value = id;
+      document.getElementById('topup-user-name').value = username;
+      document.getElementById('topup-amount').value = 100;
+      openModal('modal-topup');
+    }
+
+    async function handleTopupSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('topup-user-id').value;
+      const amt = document.getElementById('topup-amount').value;
+      const note = document.getElementById('topup-note').value;
+
+      try {
+        const res = await api('/api/users/topup', {
+          method: 'POST',
+          body: JSON.stringify({ target_user_id: id, amount: amt, note })
+        });
+        toast(res.message);
+        closeModal('modal-topup');
+        initApp();
+        loadUsers();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    async function toggleUserBlock(id) {
+      try {
+        const res = await api(`/api/users/${id}/toggle-block`, { method: 'PUT' });
+        toast(res.message);
+        loadUsers();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    // Credit Ledger
+    async function loadLedger() {
+      const tb = document.getElementById('ledger-table-body');
+      tb.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted)">Loading ledger...</td></tr>`;
+
+      try {
+        const res = await api('/api/ledger');
+        const ledger = res.ledger || [];
+        if (ledger.length === 0) {
+          tb.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted)">No transaction history recorded yet.</td></tr>`;
+          return;
+        }
+
+        tb.innerHTML = ledger.map(l => {
+          const isPos = l.amount > 0;
+          return `
+            <tr>
+              <td style="font-size:12px; color:var(--text-secondary)">${new Date(l.created_at).toLocaleString()}</td>
+              <td><strong>${l.username}</strong></td>
+              <td><span class="badge badge-owner">${l.action_type}</span></td>
+              <td style="color:${isPos ? 'var(--success)' : 'var(--error)'}; font-weight:800; font-family:'JetBrains Mono'">
+                ${isPos ? '+' : ''}${l.amount}
+              </td>
+              <td class="font-mono"><strong>${l.balance_after}</strong></td>
+              <td style="font-size:13px; color:var(--text-secondary)">${l.note || '—'}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tb.innerHTML = `<tr><td colspan="6" style="color:var(--error); text-align:center; padding:20px">${err.message}</td></tr>`;
+      }
+    }
+
+    // Pricing Settings
+    async function loadPricing() {
+      try {
+        const res = await api('/api/pricing');
+        const s = res.settings;
+        if (!s) return;
+
+        document.getElementById('pricing-brand-name').value = s.brand_name || 'Featurestic Brand';
+        document.getElementById('pricing-1d').value = s.price_1d || 1;
+        document.getElementById('pricing-7d').value = s.price_7d || 5;
+        document.getElementById('pricing-15d').value = s.price_15d || 10;
+        document.getElementById('pricing-30d').value = s.price_30d || 18;
+        document.getElementById('pricing-60d').value = s.price_60d || 32;
+        document.getElementById('pricing-custom').value = s.price_custom_per_day || 1;
+      } catch (err) {
+        console.error('loadPricing err', err);
+      }
+    }
+
+    async function handleSavePricing(e) {
+      e.preventDefault();
+      try {
+        await api('/api/pricing', {
+          method: 'PUT',
+          body: JSON.stringify({
+            brand_name: document.getElementById('pricing-brand-name').value,
+            price_1d: document.getElementById('pricing-1d').value,
+            price_7d: document.getElementById('pricing-7d').value,
+            price_15d: document.getElementById('pricing-15d').value,
+            price_30d: document.getElementById('pricing-30d').value,
+            price_60d: document.getElementById('pricing-60d').value,
+            price_custom_per_day: document.getElementById('pricing-custom').value
+          })
+        });
+        toast('Pricing configuration saved successfully!');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    }
+
+    // Stats
+    async function loadStats() {
+      try {
+        const res = await api('/api/stats');
+        const s = res.stats;
+        document.getElementById('stat-total-keys').textContent = s.total_keys;
+        document.getElementById('stat-active-keys').textContent = s.active_keys;
+        document.getElementById('stat-total-devices').textContent = s.total_devices;
+        document.getElementById('stat-active-loaders').textContent = s.active_loaders;
+      } catch (e) {}
+    }
+
+    // Check URL parameters (e.g. ?ref=REF-XXXX)
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref) {
+        switchAuthTab('referral');
+        document.getElementById('reg-ref-code').value = ref;
+      }
+      initApp();
+    });
+  </script>
+</body>
+</html>
