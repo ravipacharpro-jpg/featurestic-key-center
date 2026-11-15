@@ -138,8 +138,8 @@ async function authenticate(req, res, next) {
 // ============================================================
 async function handleConnect(req, res) {
   const { slug } = req.params;
-  const key = req.body?.key || req.query?.key;
-  const hwid = req.body?.hwid || req.query?.hwid;
+  const key = req.body?.key || req.query?.key || req.body?.user_key || req.query?.user_key;
+  const hwid = req.body?.hwid || req.query?.hwid || req.body?.serial || req.query?.serial;
   const model = req.body?.model || req.query?.model;
   const android_version = req.body?.android_version || req.query?.android_version;
 
@@ -258,6 +258,8 @@ async function handleConnect(req, res) {
       data: {
         token: `FKC_${cleanKey}_${now}`,
         exp: expIso,
+        EXP: expIso,
+        expiry: expIso,
         loader_name: loader.loader_name,
         package_name: req.body?.package_name || req.query?.package_name || loader.package_name || '*',
         version: loader.app_version,
