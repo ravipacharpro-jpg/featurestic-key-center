@@ -49,7 +49,7 @@ function invalidateCache(slug = null, key = null) {
   }
 }
 
-// Simple fast token creator & verifier (Zero external JWT overhead)
+// Fast JWT Helper
 function createToken(payload) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const body = Buffer.from(JSON.stringify({ ...payload, exp: Date.now() + 7 * 24 * 3600 * 1000 })).toString('base64url');
@@ -72,7 +72,7 @@ function verifyToken(token) {
   }
 }
 
-// Authentication Middleware
+// Authentication Middleware with Impersonation & Fresh DB State
 async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -84,28 +84,40 @@ async function authenticate(req, res, next) {
     return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
   }
 
-  // Handle SuperAdmin Impersonation Mode
-  const impersonateUserId = req.headers['x-impersonate-user-id'];
-  if (payload.role === 'superadmin' && impersonateUserId) {
-    const impUser = (await sql`SELECT * FROM fkc.users WHERE id = ${parseInt(impersonateUserId)}`)[0];
-    if (impUser) {
-      req.user = impUser;
-      req.isImpersonating = true;
-      req.realSuperAdmin = payload;
-      return next();
+  try {
+    // Handle SuperAdmin Impersonation Mode
+    const impersonateUserId = req.headers['x-impersonate-user-id'];
+    if (payload.role === 'superadmin' && impersonateUserId) {
+      const impUser = (await sql`SELECT * FROM fkc.users WHERE id = ${parseInt(impersonateUserId)}`)[0];
+      if (impUser) {
+        req.user = impUser;
+        req.isImpersonating = true;
+        req.realSuperAdmin = payload;
+        return next();
+      }
     }
-  }
 
-  req.user = payload;
-  next();
+    const freshUser = (await sql`SELECT * FROM fkc.users WHERE id = ${payload.id}`)[0];
+    if (!freshUser || freshUser.status === 'blocked') {
+      return res.status(403).json({ error: 'User is blocked or deleted' });
+    }
+
+    req.user = freshUser;
+    next();
+  } catch (err) {
+    return res.status(500).json({ error: 'Auth Verification Error' });
+  }
 }
 
 // ============================================================
-// 1. PUBLIC CONNECT ROUTER (DEDICATED SHORT URL: /c/:slug)
+// 1. PUBLIC CONNECT ROUTER (/c/:slug and /c/:slug/connect)
 // ============================================================
-app.post('/c/:slug', async (req, res) => {
+async function handleConnect(req, res) {
   const { slug } = req.params;
-  const { key, hwid, model, android_version } = req.body;
+  const key = req.body?.key || req.query?.key;
+  const hwid = req.body?.hwid || req.query?.hwid;
+  const model = req.body?.model || req.query?.model;
+  const android_version = req.body?.android_version || req.query?.android_version;
 
   if (!key || !slug) {
     return res.status(400).json({ status: false, message: 'Missing Key or Loader Slug' });
@@ -124,7 +136,7 @@ app.post('/c/:slug', async (req, res) => {
   }
 
   try {
-    // 2. Fetch Loader by Slug (Cached)
+    // 2. Fetch Loader by Slug (In-Memory Cache)
     let loader = _loaderCache.get(slug);
     if (!loader) {
       const dbLoader = (await sql`SELECT * FROM fkc.loaders WHERE slug = ${slug}`)[0];
@@ -160,7 +172,6 @@ app.post('/c/:slug', async (req, res) => {
     `)[0];
 
     if (!keyRecord) {
-      // Record bad attempt
       rateData.count++;
       if (rateData.count >= 5) {
         rateData.blockedUntil = now + 15 * 60 * 1000;
@@ -169,7 +180,6 @@ app.post('/c/:slug', async (req, res) => {
       return res.status(403).json({ status: false, message: 'Invalid Key for this specific Loader!' });
     }
 
-    // Check if Banned
     if (keyRecord.status === 'banned') {
       return res.status(403).json({ status: false, message: 'License key is BANNED by Admin!' });
     }
@@ -179,7 +189,6 @@ app.post('/c/:slug', async (req, res) => {
     let expiresAt = keyRecord.expires_at;
 
     if (!firstUsed) {
-      // First time activating key
       firstUsed = new Date();
       expiresAt = new Date(firstUsed.getTime() + keyRecord.duration_days * 24 * 3600 * 1000);
       await sql`
@@ -205,7 +214,6 @@ app.post('/c/:slug', async (req, res) => {
           });
         }
 
-        // Bind new device
         await sql`
           INSERT INTO fkc.bound_devices (key_id, device_id, model, android_version, ip_address)
           VALUES (${keyRecord.id}, ${cleanHwid}, ${model || 'Unknown'}, ${android_version || 'Unknown'}, ${clientIp})
@@ -235,21 +243,23 @@ app.post('/c/:slug', async (req, res) => {
       }
     };
 
-    // Cache valid response for 60 seconds (zero DB overhead on repeat pings)
     _keyCache.set(cacheLookupKey, { data: responsePayload, exp: now + 60000 });
-
     return res.json(responsePayload);
   } catch (err) {
     console.error('[/c/:slug Error]', err);
     return res.status(500).json({ status: false, message: 'Internal Server Error' });
   }
-});
+}
+
+// Route Aliases: /c/:slug and /c/:slug/connect
+app.post('/c/:slug', handleConnect);
+app.post('/c/:slug/connect', handleConnect);
+app.get('/c/:slug', handleConnect);
+app.get('/c/:slug/connect', handleConnect);
 
 // ============================================================
 // 2. AUTHENTICATION & REFERRAL SIGNUP APIS
 // ============================================================
-
-// Direct Login
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -267,7 +277,6 @@ app.post('/api/auth/login', async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // Fetch Owner Settings if applicable
     let ownerSettings = null;
     const effectiveOwnerId = user.role === 'owner' ? user.id : user.owner_id;
     if (effectiveOwnerId) {
@@ -291,6 +300,7 @@ app.post('/api/auth/login', async (req, res) => {
         credits: user.credits,
         owner_id: user.owner_id,
         admin_id: user.admin_id,
+        assigned_loaders: user.assigned_loaders,
         owner_settings: ownerSettings
       }
     });
@@ -317,23 +327,19 @@ app.post('/api/auth/register-referral', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    // Create user with target role and assigned credits
     const newUser = (await sql`
-      INSERT INTO fkc.users (username, password_hash, role, credits, owner_id, admin_id)
-      VALUES (${username.trim()}, ${hash}, ${ref.target_role}, ${ref.credits_allocated}, ${ref.owner_id}, ${ref.admin_id})
-      RETURNING id, username, role, credits, owner_id, admin_id
+      INSERT INTO fkc.users (username, password_hash, role, credits, owner_id, admin_id, assigned_loaders)
+      VALUES (${username.trim()}, ${hash}, ${ref.target_role}, ${ref.credits_allocated}, ${ref.owner_id}, ${ref.admin_id}, ${ref.assigned_loaders || '[]'})
+      RETURNING id, username, role, credits, owner_id, admin_id, assigned_loaders
     `)[0];
 
-    // Mark referral used
     await sql`UPDATE fkc.referrals SET status = 'used', used_by_id = ${newUser.id} WHERE id = ${ref.id}`;
 
-    // If Target Role was OWNER, create default Owner Settings & Loaders slot
     if (ref.target_role === 'owner') {
       await sql`
         INSERT INTO fkc.owner_settings (owner_id, brand_name, max_loaders)
         VALUES (${newUser.id}, ${`${username}'s Brand`}, ${ref.max_loaders_allowed || 5})
       `;
-      // Create initial default loader
       const defaultSlug = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}_loader`.slice(0, 30);
       await sql`
         INSERT INTO fkc.loaders (owner_id, loader_name, slug, package_name)
@@ -341,7 +347,6 @@ app.post('/api/auth/register-referral', async (req, res) => {
       `;
     }
 
-    // Record credit transaction
     await sql`
       INSERT INTO fkc.credit_ledger (user_id, actor_id, action_type, amount, balance_after, note)
       VALUES (${newUser.id}, ${ref.creator_id}, 'REFERRAL_SIGNUP', ${ref.credits_allocated}, ${ref.credits_allocated}, ${`Account created via Referral Code ${ref.code}`})
@@ -361,12 +366,10 @@ app.post('/api/auth/register-referral', async (req, res) => {
   }
 });
 
-// Get Current User Profile & Fresh Balance
+// Profile & Fresh Status
 app.get('/api/auth/me', authenticate, async (req, res) => {
   try {
-    const user = (await sql`SELECT id, username, role, credits, owner_id, admin_id, status FROM fkc.users WHERE id = ${req.user.id}`)[0];
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
+    const user = req.user;
     let ownerSettings = null;
     const effectiveOwnerId = user.role === 'owner' ? user.id : user.owner_id;
     if (effectiveOwnerId) {
@@ -375,7 +378,14 @@ app.get('/api/auth/me', authenticate, async (req, res) => {
 
     res.json({
       user: {
-        ...user,
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        credits: user.credits,
+        owner_id: user.owner_id,
+        admin_id: user.admin_id,
+        assigned_loaders: user.assigned_loaders,
+        status: user.status,
         is_impersonating: Boolean(req.isImpersonating),
         real_superadmin: req.realSuperAdmin || null,
         owner_settings: ownerSettings
@@ -387,7 +397,7 @@ app.get('/api/auth/me', authenticate, async (req, res) => {
 });
 
 // ============================================================
-// 3. OWNER LOADER MANAGEMENT APIS
+// 3. OWNER LOADER MANAGEMENT APIS (WITH ROLE FILTERING)
 // ============================================================
 app.get('/api/loaders', authenticate, async (req, res) => {
   try {
@@ -411,6 +421,16 @@ app.get('/api/loaders', authenticate, async (req, res) => {
       `;
     }
 
+    // Role-based Loader Filtering: If Admin or Reseller has assigned_loaders, filter them!
+    if (req.user.role === 'admin' || req.user.role === 'reseller') {
+      let assigned = [];
+      try { assigned = JSON.parse(req.user.assigned_loaders || '[]'); } catch (e) {}
+      if (Array.isArray(assigned) && assigned.length > 0 && !assigned.includes('all')) {
+        const allowedIds = assigned.map(Number);
+        loaders = loaders.filter(l => allowedIds.includes(l.id));
+      }
+    }
+
     res.json({ loaders });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -431,7 +451,6 @@ app.post('/api/loaders', authenticate, async (req, res) => {
   const ownerId = req.user.role === 'owner' ? req.user.id : (req.body.owner_id || req.user.id);
 
   try {
-    // Check quota
     const settings = (await sql`SELECT max_loaders FROM fkc.owner_settings WHERE owner_id = ${ownerId}`)[0];
     const maxAllowed = settings?.max_loaders || 5;
     const currentCount = (await sql`SELECT count(*) FROM fkc.loaders WHERE owner_id = ${ownerId}`)[0].count;
@@ -440,10 +459,9 @@ app.post('/api/loaders', authenticate, async (req, res) => {
       return res.status(400).json({ error: `Loader quota limit reached (${currentCount}/${maxAllowed}). Contact SuperAdmin to expand slots.` });
     }
 
-    // Check slug collision
     const existing = (await sql`SELECT id FROM fkc.loaders WHERE slug = ${cleanSlug}`)[0];
     if (existing) {
-      return res.status(400).json({ error: `Slug "${cleanSlug}" is already in use by another loader. Choose a unique slug!` });
+      return res.status(400).json({ error: `Slug "${cleanSlug}" is already in use. Choose another slug!` });
     }
 
     const loader = (await sql`
@@ -532,7 +550,7 @@ app.put('/api/pricing', authenticate, async (req, res) => {
 });
 
 // ============================================================
-// 5. REFERRAL INVITE CARD ENGINE
+// 5. REFERRAL INVITE CARD ENGINE (WITH ASSIGNED LOADERS)
 // ============================================================
 app.get('/api/referrals', authenticate, async (req, res) => {
   try {
@@ -562,13 +580,9 @@ app.get('/api/referrals', authenticate, async (req, res) => {
 });
 
 app.post('/api/referrals', authenticate, async (req, res) => {
-  const { target_role, credits_allocated, max_loaders_allowed } = req.body;
+  const { target_role, credits_allocated, max_loaders_allowed, assigned_loaders } = req.body;
   const credits = parseInt(credits_allocated || 0);
 
-  // Authorization Matrix:
-  // SuperAdmin -> creates 'owner'
-  // Owner -> creates 'admin' or 'reseller'
-  // Admin -> creates 'reseller'
   if (req.user.role === 'superadmin' && target_role !== 'owner' && target_role !== 'admin' && target_role !== 'reseller') {
     return res.status(400).json({ error: 'SuperAdmin can create any role referral' });
   }
@@ -579,32 +593,34 @@ app.post('/api/referrals', authenticate, async (req, res) => {
     return res.status(403).json({ error: 'Admins can only create Reseller referrals' });
   }
 
-  // Deduct Credits if creator is Admin (Owner & SuperAdmin have unlimited)
+  // Deduct Credits if creator is Admin
   if (req.user.role === 'admin') {
     const currentAdmin = (await sql`SELECT credits FROM fkc.users WHERE id = ${req.user.id}`)[0];
     if (currentAdmin.credits < credits) {
       return res.status(400).json({ error: `Insufficient Credits! You have ${currentAdmin.credits}, but tried to allocate ${credits}.` });
     }
-    await sql`UPDATE fkc.users SET credits = credits - ${credits} WHERE id = ${req.user.id}`;
+    await sql`UPDATE fkc.users SET credits = credits - ${credits}::int WHERE id = ${req.user.id}`;
   }
 
   try {
     const code = `REF-${target_role.slice(0, 3).toUpperCase()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
     const ownerId = req.user.role === 'owner' ? req.user.id : (req.user.owner_id || null);
     const adminId = req.user.role === 'admin' ? req.user.id : null;
+    const assignedLoadersStr = JSON.stringify(assigned_loaders || []);
 
     const ref = (await sql`
-      INSERT INTO fkc.referrals (code, creator_id, owner_id, admin_id, target_role, credits_allocated, max_loaders_allowed)
-      VALUES (${code}, ${req.user.id}, ${ownerId}, ${adminId}, ${target_role}, ${credits}, ${max_loaders_allowed || 1})
+      INSERT INTO fkc.referrals (code, creator_id, owner_id, admin_id, target_role, credits_allocated, max_loaders_allowed, assigned_loaders)
+      VALUES (${code}, ${req.user.id}, ${ownerId}, ${adminId}, ${target_role}, ${credits}, ${max_loaders_allowed || 1}, ${assignedLoadersStr})
       RETURNING *
     `)[0];
 
-    // Log transaction
+    // Log transaction with typed negative integer
     if (credits > 0 && req.user.role === 'admin') {
       const remaining = (await sql`SELECT credits FROM fkc.users WHERE id = ${req.user.id}`)[0].credits;
+      const negCredits = -Math.abs(credits);
       await sql`
         INSERT INTO fkc.credit_ledger (user_id, actor_id, action_type, amount, balance_after, note)
-        VALUES (${req.user.id}, ${req.user.id}, 'TRANSFER', -${credits}, ${remaining}, ${`Allocated to Referral Card ${code}`})
+        VALUES (${req.user.id}, ${req.user.id}, 'TRANSFER', ${negCredits}::int, ${remaining}, ${`Allocated to Referral Card ${code}`})
       `;
     }
 
@@ -647,7 +663,6 @@ app.get('/api/keys', authenticate, async (req, res) => {
         ORDER BY k.id DESC LIMIT 300
       `;
     } else if (req.user.role === 'admin') {
-      // Admin sees keys created by themselves and their resellers
       query = sql`
         SELECT k.*, l.loader_name, l.slug as loader_slug, u.username as creator_name,
                (SELECT count(*) FROM fkc.bound_devices bd WHERE bd.key_id = k.id) as bound_count
@@ -660,7 +675,6 @@ app.get('/api/keys', authenticate, async (req, res) => {
         ORDER BY k.id DESC LIMIT 300
       `;
     } else {
-      // Reseller sees only their own keys
       query = sql`
         SELECT k.*, l.loader_name, l.slug as loader_slug, u.username as creator_name,
                (SELECT count(*) FROM fkc.bound_devices bd WHERE bd.key_id = k.id) as bound_count
@@ -684,7 +698,7 @@ app.get('/api/keys', authenticate, async (req, res) => {
 // Single or Bulk Generate Keys
 app.post('/api/keys', authenticate, async (req, res) => {
   const { loader_id, duration_type, custom_days, quantity, max_devices, prefix } = req.body;
-  const qty = Math.min(Math.max(parseInt(quantity || 1), 1), 100); // max 100 per batch
+  const qty = Math.min(Math.max(parseInt(quantity || 1), 1), 100);
   const maxDev = Math.max(parseInt(max_devices || 1), 1);
 
   let days = 1;
@@ -696,18 +710,29 @@ app.post('/api/keys', authenticate, async (req, res) => {
   else if (duration_type === 'custom') days = Math.max(parseInt(custom_days || 1), 1);
 
   try {
-    // 1. Fetch Loader and verify ownership
     const loader = (await sql`SELECT * FROM fkc.loaders WHERE id = ${parseInt(loader_id)}`)[0];
     if (!loader) return res.status(404).json({ error: 'Selected loader not found' });
 
     const ownerId = loader.owner_id;
 
-    // Check if user belongs to this owner
+    // Check Tenant Alignment
     if (req.user.role !== 'superadmin' && req.user.role !== 'owner' && req.user.owner_id !== ownerId) {
       return res.status(403).json({ error: 'You cannot generate keys for this Owner’s loader!' });
     }
 
-    // 2. Determine Credit Cost from Owner Settings
+    // Check Assigned Loader Access for Admin / Reseller
+    if (req.user.role === 'admin' || req.user.role === 'reseller') {
+      let assigned = [];
+      try { assigned = JSON.parse(req.user.assigned_loaders || '[]'); } catch (e) {}
+      if (Array.isArray(assigned) && assigned.length > 0 && !assigned.includes('all')) {
+        const allowedIds = assigned.map(Number);
+        if (!allowedIds.includes(loader.id)) {
+          return res.status(403).json({ error: 'You do not have permission to generate keys for this specific loader!' });
+        }
+      }
+    }
+
+    // Determine Cost
     let unitCost = 1;
     const settings = (await sql`SELECT * FROM fkc.owner_settings WHERE owner_id = ${ownerId}`)[0];
     if (settings) {
@@ -721,7 +746,7 @@ app.post('/api/keys', authenticate, async (req, res) => {
 
     const totalCost = unitCost * qty;
 
-    // Deduct credits if user is Admin or Reseller
+    // Deduct credits with typed integer cast (Prevents SQL unary minus syntax error)
     if (req.user.role === 'admin' || req.user.role === 'reseller') {
       const currentUser = (await sql`SELECT credits FROM fkc.users WHERE id = ${req.user.id}`)[0];
       if (currentUser.credits < totalCost) {
@@ -729,11 +754,11 @@ app.post('/api/keys', authenticate, async (req, res) => {
           error: `Insufficient credits! Generating ${qty} x ${days}D requires ${totalCost} credits, but you have ${currentUser.credits}.`
         });
       }
-      await sql`UPDATE fkc.users SET credits = credits - ${totalCost} WHERE id = ${req.user.id}`;
+      await sql`UPDATE fkc.users SET credits = credits - ${parseInt(totalCost)}::int WHERE id = ${req.user.id}`;
     }
 
-    // 3. Generate Keys
-    const cleanPrefix = (prefix || 'FKC').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    // Generate Keys
+    const cleanPrefix = (prefix || 'FL').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     const generatedKeys = [];
 
     for (let i = 0; i < qty; i++) {
@@ -749,12 +774,13 @@ app.post('/api/keys', authenticate, async (req, res) => {
       generatedKeys.push(inserted);
     }
 
-    // 4. Log transaction
+    // Log transaction with explicit typed negative value
     if (totalCost > 0 && (req.user.role === 'admin' || req.user.role === 'reseller')) {
       const freshBalance = (await sql`SELECT credits FROM fkc.users WHERE id = ${req.user.id}`)[0].credits;
+      const negTotalCost = -Math.abs(parseInt(totalCost));
       await sql`
         INSERT INTO fkc.credit_ledger (user_id, actor_id, action_type, amount, balance_after, note)
-        VALUES (${req.user.id}, ${req.user.id}, 'KEY_GEN', -${totalCost}, ${freshBalance}, ${`Generated ${qty} x ${duration_type} keys for ${loader.loader_name}`})
+        VALUES (${req.user.id}, ${req.user.id}, 'KEY_GEN', ${negTotalCost}::int, ${freshBalance}, ${`Generated ${qty} x ${duration_type} keys for ${loader.loader_name}`})
       `;
     }
 
@@ -764,6 +790,7 @@ app.post('/api/keys', authenticate, async (req, res) => {
       keys: generatedKeys
     });
   } catch (err) {
+    console.error('[POST /api/keys Error]', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -776,14 +803,12 @@ app.put('/api/keys/:id/reset-hwid', authenticate, async (req, res) => {
     const key = (await sql`SELECT * FROM fkc.license_keys WHERE id = ${parseInt(id)}`)[0];
     if (!key) return res.status(404).json({ error: 'Key not found' });
 
-    // Authorization check
     if (req.user.role === 'reseller' && key.creator_id !== req.user.id) {
       return res.status(403).json({ error: 'You can only reset your own keys' });
     }
 
     await sql`DELETE FROM fkc.bound_devices WHERE key_id = ${key.id}`;
 
-    // Invalidate in-memory cache for this key
     const loader = (await sql`SELECT slug FROM fkc.loaders WHERE id = ${key.loader_id}`)[0];
     if (loader) invalidateCache(loader.slug, key.user_key);
 
@@ -824,7 +849,6 @@ app.put('/api/keys/:id/extend', authenticate, async (req, res) => {
     if (!key) return res.status(404).json({ error: 'Key not found' });
 
     let newExpiresAt = key.expires_at ? new Date(key.expires_at) : new Date();
-    // If already expired, start from now
     if (newExpiresAt.getTime() < Date.now()) {
       newExpiresAt = new Date();
     }
@@ -853,14 +877,14 @@ app.get('/api/users', authenticate, async (req, res) => {
     let users;
     if (req.user.role === 'superadmin') {
       users = await sql`
-        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.created_at,
+        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.assigned_loaders, u.created_at,
                (SELECT count(*) FROM fkc.license_keys k WHERE k.creator_id = u.id) as keys_generated
         FROM fkc.users u
         ORDER BY u.id DESC
       `;
     } else if (req.user.role === 'owner') {
       users = await sql`
-        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.created_at,
+        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.assigned_loaders, u.created_at,
                (SELECT count(*) FROM fkc.license_keys k WHERE k.creator_id = u.id) as keys_generated
         FROM fkc.users u
         WHERE u.owner_id = ${req.user.id}
@@ -868,7 +892,7 @@ app.get('/api/users', authenticate, async (req, res) => {
       `;
     } else if (req.user.role === 'admin') {
       users = await sql`
-        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.created_at,
+        SELECT u.id, u.username, u.role, u.credits, u.status, u.owner_id, u.admin_id, u.assigned_loaders, u.created_at,
                (SELECT count(*) FROM fkc.license_keys k WHERE k.creator_id = u.id) as keys_generated
         FROM fkc.users u
         WHERE u.admin_id = ${req.user.id}
@@ -884,7 +908,7 @@ app.get('/api/users', authenticate, async (req, res) => {
   }
 });
 
-// Top-up Balance (SuperAdmin -> anyone; Owner -> their Admins/Resellers; Admin -> their Resellers)
+// Top-up Balance
 app.post('/api/users/topup', authenticate, async (req, res) => {
   const { target_user_id, amount, note } = req.body;
   const creditsToAdd = parseInt(amount || 0);
@@ -897,7 +921,6 @@ app.post('/api/users/topup', authenticate, async (req, res) => {
     const targetUser = (await sql`SELECT * FROM fkc.users WHERE id = ${parseInt(target_user_id)}`)[0];
     if (!targetUser) return res.status(404).json({ error: 'Target user not found' });
 
-    // Authorization & Balance Check
     if (req.user.role === 'admin') {
       if (targetUser.admin_id !== req.user.id) {
         return res.status(403).json({ error: 'You can only top-up your own resellers' });
@@ -906,25 +929,23 @@ app.post('/api/users/topup', authenticate, async (req, res) => {
       if (adminUser.credits < creditsToAdd) {
         return res.status(400).json({ error: `Insufficient credits! You have ${adminUser.credits}, attempted top-up ${creditsToAdd}.` });
       }
-      await sql`UPDATE fkc.users SET credits = credits - ${creditsToAdd} WHERE id = ${req.user.id}`;
+      await sql`UPDATE fkc.users SET credits = credits - ${creditsToAdd}::int WHERE id = ${req.user.id}`;
     } else if (req.user.role === 'owner') {
       if (targetUser.owner_id !== req.user.id) {
         return res.status(403).json({ error: 'You can only top-up your own Admins or Resellers' });
       }
     }
 
-    // Add credits to target user
     const updated = (await sql`
       UPDATE fkc.users 
-      SET credits = credits + ${creditsToAdd} 
+      SET credits = credits + ${creditsToAdd}::int 
       WHERE id = ${targetUser.id}
       RETURNING credits
     `)[0];
 
-    // Ledger record
     await sql`
       INSERT INTO fkc.credit_ledger (user_id, actor_id, action_type, amount, balance_after, note)
-      VALUES (${targetUser.id}, ${req.user.id}, 'TOP_UP', ${creditsToAdd}, ${updated.credits}, ${note || `Top-up by ${req.user.username}`})
+      VALUES (${targetUser.id}, ${req.user.id}, 'TOP_UP', ${creditsToAdd}::int, ${updated.credits}, ${note || `Top-up by ${req.user.username}`})
     `;
 
     res.json({ success: true, new_balance: updated.credits, message: `Successfully added ${creditsToAdd} credits!` });
@@ -1018,12 +1039,10 @@ app.get('/api/stats', authenticate, async (req, res) => {
 // ============================================================
 app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
 
-// Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', engine: 'Featurestic Key Center (Phantom X)', uptime: process.uptime() });
 });
 
-// Fallback to SPA with zero-cache headers
 app.get('*', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -1031,7 +1050,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start Server
 initDb().then(() => {
   app.listen(PORT, () => {
     console.log(`[Featurestic Key Center] Engine running on port ${PORT}`);

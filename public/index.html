@@ -19,7 +19,7 @@
 
   <style>
     /* ============================================================
-       PHANTOM X — NEON PURPLE (PREMIUM GAMING UI THEME)
+       PHANTOM X — NEON PURPLE (ZERO-EMOJI CLEAN GAMING UI THEME)
        ============================================================ */
     :root, [data-theme="dark"] {
       --bg: #090713;
@@ -99,7 +99,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       padding: 9px 18px;
       border-radius: 10px;
       font-family: 'Rajdhani', sans-serif;
@@ -111,6 +111,7 @@
       border: 1px solid transparent;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: none;
+      white-space: nowrap;
     }
     .btn:active { transform: scale(0.97); }
     .btn-primary {
@@ -135,6 +136,7 @@
     .btn-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; border-color: rgba(239, 68, 68, 0.3); }
     .btn-danger:hover { background: #EF4444; color: #FFF; }
     .btn-success { background: rgba(16, 185, 129, 0.15); color: #10B981; border-color: rgba(16, 185, 129, 0.3); }
+    .btn-success:hover { background: #10B981; color: #FFF; }
 
     /* Inputs */
     .form-group { margin-bottom: 14px; text-align: left; }
@@ -259,7 +261,7 @@
       top: 0;
       z-index: 50;
       height: 64px;
-      background: rgba(9, 7, 19, 0.85);
+      background: rgba(9, 7, 19, 0.88);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       display: flex;
@@ -269,7 +271,7 @@
       transition: all 0.3s;
     }
     [data-theme="light"] .topbar {
-      background: rgba(245, 240, 255, 0.88);
+      background: rgba(245, 240, 255, 0.92);
     }
     .topbar-left {
       display: flex;
@@ -322,7 +324,7 @@
     .connect-url {
       font-family: 'JetBrains Mono', monospace;
       color: var(--accent);
-      max-width: 200px;
+      max-width: 220px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -472,7 +474,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -482,7 +484,7 @@
     }
     .modal-card {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -523,6 +525,24 @@
     }
     @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+    /* Checkbox Group */
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      background: var(--bg-secondary);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .main-layout { flex-direction: column; padding: 12px; gap: 14px; }
@@ -543,6 +563,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       vertical-align: middle;
+      display: inline-block;
     }
   </style>
 </head>
@@ -625,7 +646,7 @@
           <svg class="icon" style="stroke:var(--primary)" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           <span id="brand-header-text">FEATURESTIC</span>
         </div>
-        <span id="user-role-badge" class="badge badge-owner">Owner</span>
+        <span id="user-role-badge" class="badge badge-owner">OWNER</span>
       </div>
 
       <div class="topbar-right">
@@ -634,14 +655,15 @@
           <span style="color:var(--text-muted); font-size:11px">CONNECT:</span>
           <span id="current-connect-url" class="connect-url font-mono">/c/...</span>
           <button type="button" class="btn btn-sm btn-ghost" onclick="copyConnectUrl()" style="padding:4px 8px; font-size:11px">
+            <svg class="icon" style="width:13px; height:13px" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             COPY
           </button>
         </div>
 
         <!-- Credits Pill -->
         <div class="credits-pill">
-          <span>💎</span>
-          <span id="user-credits-display">♾️</span>
+          <svg class="icon" style="width:14px; height:14px; stroke:var(--accent)" viewBox="0 0 24 24"><polygon points="6 2 18 2 22 8 12 22 2 8 6 2"/></svg>
+          <span id="user-credits-display">Unlimited</span>
         </div>
 
         <!-- Theme Toggle (Dark / Light) -->
@@ -737,7 +759,7 @@
                 <p style="font-size:13px; color:var(--text-secondary)">Issue single or batch licenses for your targeted loader</p>
               </div>
               <div style="display:flex; align-items:center; gap:10px">
-                <label style="font-size:13px; color:var(--text-secondary)">TARGET LOADER:</label>
+                <label style="font-size:13px; color:var(--text-secondary); font-weight:700">TARGET LOADER:</label>
                 <select id="gen-loader-select" class="form-select font-mono" style="width:auto; padding:6px 12px; font-size:13px" onchange="onLoaderChange()">
                   <!-- Dynamically populated -->
                 </select>
@@ -778,6 +800,7 @@
               </div>
 
               <button type="submit" id="btn-generate-submit" class="btn btn-primary" style="height:44px">
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 GENERATE NOW
               </button>
             </form>
@@ -792,10 +815,12 @@
               </div>
               <div style="display:flex; gap:10px">
                 <button type="button" class="btn btn-sm btn-ghost" onclick="copyBatchKeys()">
-                  📋 COPY ALL (WHATSAPP FORMAT)
+                  <svg class="icon" style="width:14px; height:14px" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  COPY ALL (FORMATTED)
                 </button>
                 <button type="button" class="btn btn-sm btn-ghost" onclick="loadKeys()">
-                  🔄 REFRESH
+                  <svg class="icon" style="width:14px; height:14px" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  REFRESH
                 </button>
               </div>
             </div>
@@ -827,7 +852,7 @@
           <div class="card" style="margin-bottom:20px">
             <h3 style="font-size:18px; font-weight:800; text-transform:uppercase; margin-bottom:6px">ADD NEW LOADER SLOT</h3>
             <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
-              Create a dedicated loader slot with its own short connect URL (`/c/slug`).
+              Create a dedicated loader slot with its own short connect URL (`/c/slug` and `/c/slug/connect`).
             </p>
 
             <form onsubmit="handleCreateLoader(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; align-items:flex-end">
@@ -859,7 +884,7 @@
                   <tr>
                     <th>Loader Name</th>
                     <th>Slug</th>
-                    <th>Dedicated Connect URL</th>
+                    <th>Dedicated Connect URLs</th>
                     <th>Package Name</th>
                     <th>Maintenance</th>
                     <th style="text-align:right">Actions</th>
@@ -878,30 +903,40 @@
           <div class="card" style="margin-bottom:20px">
             <h3 style="font-size:18px; font-weight:800; text-transform:uppercase; margin-bottom:6px">GENERATE INVITE CARD</h3>
             <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
-              Issue referral cards to onboard Admins or Resellers with pre-loaded balance.
+              Issue referral cards to onboard Admins or Resellers with pre-loaded balance and assigned loaders access.
             </p>
 
-            <form onsubmit="handleCreateReferral(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; align-items:flex-end">
-              <div class="form-group" style="margin:0">
-                <label class="form-label">Target Role</label>
-                <select id="ref-target-role" class="form-select" onchange="toggleRefRoleOptions()">
-                  <option value="reseller">Reseller</option>
-                  <option value="admin">Admin (Sub-Admin)</option>
-                  <option value="owner" id="opt-ref-owner" style="display:none">Owner (Full Brand)</option>
-                </select>
+            <form onsubmit="handleCreateReferral(event)">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:14px">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Target Role</label>
+                  <select id="ref-target-role" class="form-select" onchange="toggleRefRoleOptions()">
+                    <option value="reseller">Reseller</option>
+                    <option value="admin">Admin (Sub-Admin)</option>
+                    <option value="owner" id="opt-ref-owner" style="display:none">Owner (Full Brand)</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Allocated Credits</label>
+                  <input type="number" id="ref-credits" class="form-control" min="0" value="100" required>
+                </div>
+
+                <div class="form-group" id="group-ref-loaders" style="margin:0; display:none">
+                  <label class="form-label">Allowed Loader Slots</label>
+                  <input type="number" id="ref-max-loaders" class="form-control" min="1" max="50" value="5">
+                </div>
               </div>
 
-              <div class="form-group" style="margin:0">
-                <label class="form-label">Allocated Credits</label>
-                <input type="number" id="ref-credits" class="form-control" min="0" value="100" required>
+              <!-- Assigned Loaders Checkbox Selection -->
+              <div class="form-group">
+                <label class="form-label">Assign Loader Permissions (Which loaders can this user access?)</label>
+                <div id="ref-loaders-checklist" class="check-grid">
+                  <!-- Checkboxes populated dynamically -->
+                </div>
               </div>
 
-              <div class="form-group" id="group-ref-loaders" style="margin:0; display:none">
-                <label class="form-label">Allowed Loader Slots</label>
-                <input type="number" id="ref-max-loaders" class="form-control" min="1" max="50" value="5">
-              </div>
-
-              <button type="submit" class="btn btn-primary" style="height:44px">
+              <button type="submit" class="btn btn-primary" style="height:44px; margin-top:6px">
                 GENERATE INVITE CARD
               </button>
             </form>
@@ -937,7 +972,7 @@
           <div class="card" style="padding:0">
             <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center">
               <h3 style="font-size:16px; font-weight:800; text-transform:uppercase">Managed Accounts & Sub-Vendors</h3>
-              <button class="btn btn-sm btn-ghost" onclick="loadUsers()">🔄 REFRESH</button>
+              <button class="btn btn-sm btn-ghost" onclick="loadUsers()">REFRESH</button>
             </div>
             <div class="table-wrap" style="border:none">
               <table>
@@ -1041,6 +1076,35 @@
 
   <!-- ==================== MODALS ==================== -->
 
+  <!-- Generated Referral Result Modal -->
+  <div id="modal-ref-result" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title">Invite Card Created</div>
+        <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-ref-result')">✕</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label class="form-label">Referral Code</label>
+          <div style="display:flex; gap:8px">
+            <input type="text" id="result-ref-code" class="form-control font-mono" readonly>
+            <button class="btn btn-primary" onclick="copyRefCodeOnly()">COPY CODE</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Direct Registration Link</label>
+          <div style="display:flex; gap:8px">
+            <input type="text" id="result-ref-link" class="form-control font-mono" readonly>
+            <button class="btn btn-primary" onclick="copyRefLinkOnly()">COPY LINK</button>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:20px">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('modal-ref-result')">DONE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Top-Up Modal -->
   <div id="modal-topup" class="modal-overlay">
     <div class="modal-card">
@@ -1108,12 +1172,15 @@
     let _currentTab = 'tab-keys';
     let _keysCache = [];
 
-    // Toast
+    // Zero-Emoji Toast
     function toast(msg, type = 'info') {
       const box = document.getElementById('toast-box');
       const el = document.createElement('div');
       el.className = 'toast';
-      el.innerHTML = `<span>⚡</span> <span>${msg}</span>`;
+      el.innerHTML = `
+        <svg class="icon" style="stroke:var(--primary)" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>${msg}</span>
+      `;
       box.appendChild(el);
       setTimeout(() => el.remove(), 3500);
     }
@@ -1135,14 +1202,20 @@
       toast(`Switched to Phantom X ${nxt.toUpperCase()} Mode`);
     }
 
-    // Fast API wrapper
+    // Robust Fast API wrapper
     async function api(endpoint, options = {}) {
       options.headers = options.headers || {};
       if (_token) options.headers['Authorization'] = `Bearer ${_token}`;
       options.headers['Content-Type'] = 'application/json';
 
       const res = await fetch(endpoint, options);
-      const data = await res.json().catch(() => ({}));
+      const text = await res.text();
+      let data = {};
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Server returned invalid response: ' + (text ? text.slice(0, 100) : res.statusText));
+      }
       if (!res.ok) throw new Error(data.error || 'Server Request Failed');
       return data;
     }
@@ -1180,7 +1253,7 @@
       }
     }
 
-    // Authentication Handlers
+    // Auth Handlers
     async function handleLogin(e) {
       e.preventDefault();
       const u = document.getElementById('login-username').value;
@@ -1268,18 +1341,16 @@
 
       const creditsDisplay = document.getElementById('user-credits-display');
       if (_user.role === 'owner' || _user.role === 'superadmin') {
-        creditsDisplay.textContent = '♾️ Unlimited';
+        creditsDisplay.textContent = 'Unlimited';
       } else {
         creditsDisplay.textContent = `${_user.credits} Credits`;
       }
 
-      // Permissions matrix
       const isOwnerOrSuper = _user.role === 'owner' || _user.role === 'superadmin';
       document.getElementById('nav-btn-loaders').style.display = isOwnerOrSuper ? 'flex' : 'none';
       document.getElementById('nav-btn-pricing').style.display = isOwnerOrSuper ? 'flex' : 'none';
       document.getElementById('nav-btn-users').style.display = (_user.role !== 'reseller') ? 'flex' : 'none';
 
-      // Referral roles
       const optOwner = document.getElementById('opt-ref-owner');
       if (optOwner) optOwner.style.display = (_user.role === 'superadmin') ? 'block' : 'none';
     }
@@ -1290,7 +1361,7 @@
         const res = await api('/api/loaders');
         _loaders = res.loaders || [];
 
-        // Populate dropdown in Generator
+        // Generator Select
         const sel = document.getElementById('gen-loader-select');
         sel.innerHTML = _loaders.map(l => `<option value="${l.id}" data-slug="${l.slug}">${l.loader_name} (/c/${l.slug})</option>`).join('');
 
@@ -1299,26 +1370,38 @@
           updateConnectUrlBox();
         }
 
-        // Render Loaders Table
+        // Referral Checklist Generator
+        renderReferralLoadersChecklist();
+
+        // Loaders Table
         const tb = document.getElementById('loaders-table-body');
         if (tb) {
           if (_loaders.length === 0) {
-            tb.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted)">No loaders created yet. Click "+ Register Loader" above.</td></tr>`;
+            tb.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted)">No loaders configured yet. Click "+ Register Loader" above.</td></tr>`;
           } else {
             tb.innerHTML = _loaders.map(l => {
-              const fullUrl = `${location.origin}/c/${l.slug}`;
+              const slugUrl = `${location.origin}/c/${l.slug}`;
+              const connectUrl = `${location.origin}/c/${l.slug}/connect`;
               return `
                 <tr>
                   <td><strong>${l.loader_name}</strong></td>
                   <td><span class="font-mono" style="color:var(--primary)">${l.slug}</span></td>
                   <td>
-                    <span class="key-token">${fullUrl}</span>
-                    <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${fullUrl}'); toast('Copied Connect Link!')">COPY</button>
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                      <div style="display:flex; align-items:center; gap:6px">
+                        <span class="key-token">${slugUrl}</span>
+                        <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${slugUrl}'); toast('Copied Short URL!')">COPY</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:6px">
+                        <span class="key-token font-mono" style="font-size:11px">${connectUrl}</span>
+                        <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${connectUrl}'); toast('Copied /connect URL!')">COPY</button>
+                      </div>
+                    </div>
                   </td>
                   <td class="font-mono" style="font-size:13px">${l.package_name}</td>
                   <td>
                     <button class="btn btn-sm ${l.maintenance ? 'btn-danger' : 'btn-ghost'}" onclick="toggleMaintenance(${l.id}, ${!l.maintenance})">
-                      ${l.maintenance ? 'PAUSED (MAINTENANCE)' : 'ONLINE'}
+                      ${l.maintenance ? 'PAUSED' : 'ONLINE'}
                     </button>
                   </td>
                   <td style="text-align:right">
@@ -1332,6 +1415,30 @@
       } catch (err) {
         console.error('loadLoaders err', err);
       }
+    }
+
+    function renderReferralLoadersChecklist() {
+      const box = document.getElementById('ref-loaders-checklist');
+      if (!box) return;
+      if (_loaders.length === 0) {
+        box.innerHTML = `<span style="color:var(--text-muted)">No loaders available yet.</span>`;
+        return;
+      }
+      box.innerHTML = `
+        <label class="check-item" style="grid-column: 1/-1">
+          <input type="checkbox" id="chk-ref-all-loaders" checked onchange="toggleAllLoaderChecks(this.checked)">
+          <strong>ALL LOADERS (Full Access)</strong>
+        </label>
+      ` + _loaders.map(l => `
+        <label class="check-item">
+          <input type="checkbox" class="chk-ref-loader" value="${l.id}" checked>
+          <span>${l.loader_name}</span>
+        </label>
+      `).join('');
+    }
+
+    function toggleAllLoaderChecks(checked) {
+      document.querySelectorAll('.chk-ref-loader').forEach(cb => cb.checked = checked);
     }
 
     function onLoaderChange() {
@@ -1426,7 +1533,7 @@
         });
 
         toast(`Generated ${res.keys.length} licenses!`);
-        initApp(); // refresh balance & keys
+        initApp();
       } catch (err) {
         toast(err.message, 'error');
       } finally {
@@ -1529,9 +1636,9 @@
     function copyBatchKeys() {
       if (_keysCache.length === 0) return toast('No keys available to copy', 'error');
       const lines = _keysCache.map((k, i) => `${i + 1}. Key: ${k.user_key} | Duration: ${k.duration_days} Days | Loader: ${k.loader_name}`);
-      const text = `🔥 FEATURESTIC LICENSES 🔥\n\n` + lines.join('\n') + `\n\nEnjoy Gaming!`;
+      const text = `FEATURESTIC LICENSES\n\n` + lines.join('\n') + `\n\nEnjoy Gaming!`;
       navigator.clipboard.writeText(text);
-      toast('Copied all keys in formatted WhatsApp style!');
+      toast('Copied all keys in formatted list!');
     }
 
     // Referral Cards
@@ -1546,17 +1653,51 @@
       const credits = document.getElementById('ref-credits').value;
       const loaders = document.getElementById('ref-max-loaders').value;
 
+      let assigned = [];
+      const chkAll = document.getElementById('chk-ref-all-loaders');
+      if (chkAll && chkAll.checked) {
+        assigned = ['all'];
+      } else {
+        document.querySelectorAll('.chk-ref-loader:checked').forEach(cb => {
+          assigned.push(parseInt(cb.value));
+        });
+      }
+
       try {
         const res = await api('/api/referrals', {
           method: 'POST',
-          body: JSON.stringify({ target_role: role, credits_allocated: credits, max_loaders_allowed: loaders })
+          body: JSON.stringify({
+            target_role: role,
+            credits_allocated: credits,
+            max_loaders_allowed: loaders,
+            assigned_loaders: assigned
+          })
         });
+
+        // Show Result Modal with Separate Copy Buttons
+        const link = `${location.origin}/?ref=${res.referral.code}`;
+        document.getElementById('result-ref-code').value = res.referral.code;
+        document.getElementById('result-ref-link').value = link;
+        openModal('modal-ref-result');
+
         toast(`Invite Card created: ${res.referral.code}`);
         initApp();
         loadReferrals();
       } catch (err) {
         toast(err.message, 'error');
       }
+    }
+
+    function copyRefCodeOnly() {
+      const c = document.getElementById('result-ref-code').value;
+      navigator.clipboard.writeText(c);
+      toast('Copied Invite Code: ' + c);
+    }
+
+    function copyRefLinkOnly() {
+      const l = document.getElementById('result-ref-link').value;
+      navigator.clipboard.writeText(l);
+      toast('Copied Direct Registration Link!');
     }
 
     async function loadReferrals() {
@@ -1575,7 +1716,7 @@
           <tr>
             <td>
               <span class="key-token">${r.code}</span>
-              <button class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${r.code}'); toast('Copied Invite Code!')">COPY</button>
+              <button class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${r.code}'); toast('Copied Code!')">COPY</button>
             </td>
             <td><span class="badge badge-${r.target_role}">${r.target_role.toUpperCase()}</span></td>
             <td><strong>${r.credits_allocated} Credits</strong></td>
@@ -1583,7 +1724,11 @@
             <td>${r.used_by_name || '—'}</td>
             <td style="font-size:12px; color:var(--text-secondary)">${new Date(r.created_at).toLocaleString()}</td>
             <td style="text-align:right">
-              ${r.status === 'pending' ? `<button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('${location.origin}/?ref=${r.code}'); toast('Copied Invite Link!')">COPY LINK</button>` : '—'}
+              ${r.status === 'pending' ? `
+                <button class="btn btn-sm btn-primary" onclick="navigator.clipboard.writeText('${location.origin}/?ref=${r.code}'); toast('Copied Registration Link!')">
+                  COPY LINK
+                </button>
+              ` : '—'}
             </td>
           </tr>
         `).join('');
@@ -1682,7 +1827,7 @@
             <tr>
               <td style="font-size:12px; color:var(--text-secondary)">${new Date(l.created_at).toLocaleString()}</td>
               <td><strong>${l.username}</strong></td>
-              <td><span class="badge badge-owner">${l.action_type}</span></td>
+              <td><span class="badge badge-owner font-mono">${l.action_type}</span></td>
               <td style="color:${isPos ? 'var(--success)' : 'var(--error)'}; font-weight:800; font-family:'JetBrains Mono'">
                 ${isPos ? '+' : ''}${l.amount}
               </td>
@@ -1748,7 +1893,6 @@
       } catch (e) {}
     }
 
-    // Check URL parameters (e.g. ?ref=REF-XXXX)
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get('ref');

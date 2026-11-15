@@ -145,6 +145,10 @@ export async function initDb() {
     console.log(`[FKC-DB] Created default SuperAdmin: ${superUser}`);
   }
 
+  // Migrations for Assigned Loaders
+  await sql`ALTER TABLE fkc.users ADD COLUMN IF NOT EXISTS assigned_loaders TEXT DEFAULT '[]'`;
+  await sql`ALTER TABLE fkc.referrals ADD COLUMN IF NOT EXISTS assigned_loaders TEXT DEFAULT '[]'`;
+
   // Create High-Performance B-Tree Indexes for sub-2ms queries
   await sql`CREATE INDEX IF NOT EXISTS idx_fkc_loaders_slug ON fkc.loaders(slug)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_fkc_keys_user_key ON fkc.license_keys(user_key)`;
