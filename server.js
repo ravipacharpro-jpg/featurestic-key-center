@@ -28,6 +28,30 @@ app.use((req, res, next) => {
   next();
 });
 
+let _dbInitPromise = null;
+export async function ensureDb() {
+  if (!_dbInitPromise) {
+    _dbInitPromise = initDb().catch(err => {
+      console.error('[DB Init Error]', err);
+      _dbInitPromise = null;
+      throw err;
+    });
+  }
+  return _dbInitPromise;
+}
+
+// Middleware to ensure DB schema is ready before API or Loader requests
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/c/')) {
+    try {
+      await ensureDb();
+    } catch (e) {
+      return res.status(500).json({ error: 'Database connection failed: ' + e.message });
+    }
+  }
+  next();
+});
+
 // ============================================================
 // ZERO-SERVER-LOAD IN-MEMORY CACHE ENGINE (SUB-2MS LATENCY)
 // ============================================================
@@ -1050,10 +1074,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-initDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`[Featurestic Key Center] Engine running on port ${PORT}`);
+if (!process.env.VERCEL) {
+  initDb().then(() => {
+    app.listen(PORT, () => {
+      console.log(`[Featurestic Key Center] Engine running on port ${PORT}`);
+    });
+  }).catch(err => {
+    console.error('[FKC-DB Error]', err);
   });
-}).catch(err => {
-  console.error('[FKC-DB Error]', err);
-});
+}
+
+export default app;
