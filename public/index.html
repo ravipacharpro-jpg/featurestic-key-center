@@ -825,6 +825,20 @@
               </div>
             </div>
 
+            <!-- Key Status Filters & Live Search -->
+            <div style="padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(0,0,0,0.15); border-bottom:1px solid var(--border)">
+              <div style="display:flex; gap:6px; flex-wrap:wrap" id="key-status-filters">
+                <button type="button" class="btn btn-sm btn-primary filter-btn active" data-filter="all" onclick="filterKeysByStatus('all')">ALL (<span id="count-all">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-ghost filter-btn" data-filter="unused" onclick="filterKeysByStatus('unused')">UNUSED / READY (<span id="count-unused">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-ghost filter-btn" data-filter="active" onclick="filterKeysByStatus('active')">ACTIVE (<span id="count-active">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-ghost filter-btn" data-filter="expired" onclick="filterKeysByStatus('expired')">EXPIRED (<span id="count-expired">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-ghost filter-btn" data-filter="banned" onclick="filterKeysByStatus('banned')">BANNED (<span id="count-banned">0</span>)</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px">
+                <input type="text" id="keys-search-input" class="form-control font-mono" placeholder="Search Key / User..." style="width:200px; padding:6px 12px; font-size:12px" oninput="onSearchKeys(this.value)">
+              </div>
+            </div>
+
             <div class="table-wrap" style="border:none">
               <table>
                 <thead>
@@ -855,18 +869,18 @@
               Create a dedicated loader slot with its own short connect URL (`/c/slug` and `/c/slug/connect`).
             </p>
 
-            <form onsubmit="handleCreateLoader(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; align-items:flex-end">
+            <form onsubmit="handleCreateLoader(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; align-items:flex-end">
               <div class="form-group" style="margin:0">
                 <label class="form-label">Loader Name</label>
-                <input type="text" id="loader-input-name" class="form-control" placeholder="e.g. BGMI 64Bit V2" required>
+                <input type="text" id="loader-input-name" class="form-control" placeholder="e.g. BGMI 64Bit Mod" oninput="autoGenSlug(this.value)" required>
               </div>
               <div class="form-group" style="margin:0">
-                <label class="form-label">Endpoint Slug (/c/slug)</label>
-                <input type="text" id="loader-input-slug" class="form-control font-mono" placeholder="e.g. bgmi64" required maxlength="30">
+                <label class="form-label">Unique Slug Identifier (/c/slug)</label>
+                <input type="text" id="loader-input-slug" class="form-control font-mono" placeholder="e.g. bgmi_64bit" oninput="this.dataset.manual='1'" required maxlength="30">
               </div>
               <div class="form-group" style="margin:0">
-                <label class="form-label">Package Name</label>
-                <input type="text" id="loader-input-pkg" class="form-control font-mono" value="com.pubg.imobile" required>
+                <label class="form-label">Compatibility</label>
+                <input type="text" class="form-control" value="Universal (Zero Package Restriction)" readonly style="color:var(--accent); font-weight:700">
               </div>
               <button type="submit" class="btn btn-primary" style="height:44px">
                 + REGISTER LOADER
@@ -885,7 +899,7 @@
                     <th>Loader Name</th>
                     <th>Slug</th>
                     <th>Dedicated Connect URLs</th>
-                    <th>Package Name</th>
+                    <th>Compatibility</th>
                     <th>Maintenance</th>
                     <th style="text-align:right">Actions</th>
                   </tr>
@@ -1222,7 +1236,11 @@
       } catch (e) {
         throw new Error('Server returned invalid response: ' + (text ? text.slice(0, 100) : res.statusText));
       }
-      if (!res.ok) throw new Error(data.error || 'Server Request Failed');
+      if (!res.ok) {
+        const err = new Error(data.error || 'Server Request Failed');
+        err.status = res.status;
+        throw err;
+      }
       return data;
     }
 
@@ -1323,21 +1341,29 @@
         return;
       }
 
+      let res;
       try {
-        const res = await api('/api/auth/me');
-        _user = res.user;
-
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('app-shell').style.display = 'flex';
-
-        applyRolePermissions();
-        await loadLoaders();
-        loadStats();
-        navTab('tab-keys');
+        res = await api('/api/auth/me');
       } catch (err) {
-        console.error('Init App Error', err);
-        logout();
+        console.error('Auth verification error', err);
+        if (err.status === 401) {
+          logout();
+        }
+        return;
       }
+
+      _user = res.user;
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app-shell').style.display = 'flex';
+
+      applyRolePermissions();
+      try {
+        await loadLoaders();
+      } catch (e) {
+        console.error('loadLoaders error', e);
+      }
+      loadStats();
+      navTab(_currentTab || 'tab-keys');
     }
 
     function applyRolePermissions() {
@@ -1404,7 +1430,7 @@
                       </div>
                     </div>
                   </td>
-                  <td class="font-mono" style="font-size:13px">${l.package_name}</td>
+                  <td><span class="badge badge-owner" style="font-size:11px">UNIVERSAL</span></td>
                   <td>
                     <button class="btn btn-sm ${l.maintenance ? 'btn-danger' : 'btn-ghost'}" onclick="toggleMaintenance(${l.id}, ${!l.maintenance})">
                       ${l.maintenance ? 'PAUSED' : 'ONLINE'}
@@ -1471,20 +1497,28 @@
       }
     }
 
+    function autoGenSlug(val) {
+      const slugInput = document.getElementById('loader-input-slug');
+      if (slugInput && !slugInput.dataset.manual) {
+        slugInput.value = (val || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
+      }
+    }
+
     async function handleCreateLoader(e) {
       e.preventDefault();
       const name = document.getElementById('loader-input-name').value;
       const slug = document.getElementById('loader-input-slug').value;
-      const pkg = document.getElementById('loader-input-pkg').value;
 
       try {
         await api('/api/loaders', {
           method: 'POST',
-          body: JSON.stringify({ loader_name: name, slug, package_name: pkg })
+          body: JSON.stringify({ loader_name: name, slug, package_name: '*' })
         });
-        toast('New Loader registered!');
+        toast('New Universal Loader registered!');
         document.getElementById('loader-input-name').value = '';
-        document.getElementById('loader-input-slug').value = '';
+        const slugInput = document.getElementById('loader-input-slug');
+        slugInput.value = '';
+        delete slugInput.dataset.manual;
         await loadLoaders();
       } catch (err) {
         toast(err.message, 'error');
@@ -1539,12 +1573,113 @@
         });
 
         toast(`Generated ${res.keys.length} licenses!`);
-        initApp();
+        loadKeys();
+        loadStats();
       } catch (err) {
         toast(err.message, 'error');
       } finally {
         btn.disabled = false;
       }
+    }
+
+    let _currentKeyFilter = 'all';
+    let _keySearchQuery = '';
+
+    function filterKeysByStatus(status) {
+      _currentKeyFilter = status;
+      document.querySelectorAll('#key-status-filters .filter-btn').forEach(b => {
+        b.classList.toggle('btn-primary', b.dataset.filter === status);
+        b.classList.toggle('btn-ghost', b.dataset.filter !== status);
+      });
+      renderKeysList();
+    }
+
+    function onSearchKeys(query) {
+      _keySearchQuery = (query || '').toLowerCase().trim();
+      renderKeysList();
+    }
+
+    function renderKeysList() {
+      const tb = document.getElementById('keys-table-body');
+      
+      const totalAll = _keysCache.length;
+      const totalUnused = _keysCache.filter(k => !k.first_used_at).length;
+      const totalActive = _keysCache.filter(k => k.status === 'active' && k.first_used_at).length;
+      const totalExpired = _keysCache.filter(k => k.status === 'expired').length;
+      const totalBanned = _keysCache.filter(k => k.status === 'banned').length;
+
+      const cAll = document.getElementById('count-all');
+      const cUnused = document.getElementById('count-unused');
+      const cActive = document.getElementById('count-active');
+      const cExpired = document.getElementById('count-expired');
+      const cBanned = document.getElementById('count-banned');
+      if (cAll) cAll.textContent = totalAll;
+      if (cUnused) cUnused.textContent = totalUnused;
+      if (cActive) cActive.textContent = totalActive;
+      if (cExpired) cExpired.textContent = totalExpired;
+      if (cBanned) cBanned.textContent = totalBanned;
+      const cntBadge = document.getElementById('keys-count-badge');
+      if (cntBadge) cntBadge.textContent = `${totalAll} Keys`;
+
+      let filtered = _keysCache.filter(k => {
+        if (_currentKeyFilter === 'unused') return !k.first_used_at;
+        if (_currentKeyFilter === 'active') return k.status === 'active' && k.first_used_at;
+        if (_currentKeyFilter === 'expired') return k.status === 'expired';
+        if (_currentKeyFilter === 'banned') return k.status === 'banned';
+        return true;
+      });
+
+      if (_keySearchQuery) {
+        filtered = filtered.filter(k => 
+          k.user_key.toLowerCase().includes(_keySearchQuery) ||
+          (k.creator_name && k.creator_name.toLowerCase().includes(_keySearchQuery)) ||
+          (k.loader_name && k.loader_name.toLowerCase().includes(_keySearchQuery))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tb.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted)">No keys found for this filter/search.</td></tr>`;
+        return;
+      }
+
+      tb.innerHTML = filtered.map(k => {
+        let statusBadge = '';
+        if (k.status === 'banned') {
+          statusBadge = `<span class="badge badge-banned">BANNED</span>`;
+        } else if (k.status === 'expired') {
+          statusBadge = `<span class="badge badge-expired">EXPIRED</span>`;
+        } else if (!k.first_used_at) {
+          statusBadge = `<span class="badge" style="background:rgba(59,130,246,0.18); color:#93C5FD; border:1px solid rgba(59,130,246,0.35); font-weight:700">UNUSED (READY)</span>`;
+        } else {
+          statusBadge = `<span class="badge badge-active">ACTIVE (IN USE)</span>`;
+        }
+
+        const expText = k.expires_at ? new Date(k.expires_at).toLocaleString() : (!k.first_used_at ? 'Starts on 1st login' : 'Expired');
+
+        return `
+          <tr>
+            <td>
+              <span class="key-token font-mono">${k.user_key}</span>
+              <button type="button" class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${k.user_key}'); toast('Copied Key!')">COPY</button>
+            </td>
+            <td><strong>${k.loader_name}</strong></td>
+            <td><span class="badge badge-owner font-mono">${k.duration_days}D (${k.duration_type.toUpperCase()})</span></td>
+            <td>${statusBadge}</td>
+            <td><span class="font-mono">${k.bound_count || 0} / ${k.max_devices}</span></td>
+            <td style="font-size:12px; color:var(--text-secondary)">${expText}</td>
+            <td style="font-size:13px">${k.creator_name}</td>
+            <td style="text-align:right">
+              <div style="display:inline-flex; gap:6px">
+                <button type="button" class="btn btn-sm btn-ghost" title="1-Tap Instant HWID Reset" onclick="resetHwid(${k.id}, this)">1-TAP RESET</button>
+                <button type="button" class="btn btn-sm btn-ghost" title="Extend Expiry" onclick="openExtendModal(${k.id}, '${k.user_key}')">+ EXTEND</button>
+                <button type="button" class="btn btn-sm ${k.status === 'banned' ? 'btn-success' : 'btn-danger'}" onclick="toggleBan(${k.id})">
+                  ${k.status === 'banned' ? 'UNBAN' : 'BAN'}
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function loadKeys() {
@@ -1554,54 +1689,30 @@
       try {
         const res = await api('/api/keys');
         _keysCache = res.keys || [];
-        document.getElementById('keys-count-badge').textContent = `${_keysCache.length} Keys`;
-
-        if (_keysCache.length === 0) {
-          tb.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted)">No keys found. Generate keys using the box above!</td></tr>`;
-          return;
-        }
-
-        tb.innerHTML = _keysCache.map(k => {
-          const expText = k.expires_at ? new Date(k.expires_at).toLocaleString() : (k.first_used_at ? 'Expired' : 'Not Activated (Starts on 1st login)');
-          const statusClass = k.status === 'active' ? 'badge-active' : (k.status === 'banned' ? 'badge-banned' : 'badge-expired');
-
-          return `
-            <tr>
-              <td>
-                <span class="key-token">${k.user_key}</span>
-                <button class="btn btn-sm btn-ghost" style="padding:2px 6px; font-size:11px" onclick="navigator.clipboard.writeText('${k.user_key}'); toast('Copied Key!')">COPY</button>
-              </td>
-              <td><strong>${k.loader_name}</strong></td>
-              <td><span class="badge badge-owner font-mono">${k.duration_days}D (${k.duration_type.toUpperCase()})</span></td>
-              <td><span class="badge ${statusClass}">${k.status.toUpperCase()}</span></td>
-              <td><span class="font-mono">${k.bound_count || 0} / ${k.max_devices}</span></td>
-              <td style="font-size:12px; color:var(--text-secondary)">${expText}</td>
-              <td style="font-size:13px">${k.creator_name}</td>
-              <td style="text-align:right">
-                <div style="display:inline-flex; gap:6px">
-                  <button class="btn btn-sm btn-ghost" title="Reset HWID / Unbind phone" onclick="resetHwid(${k.id})">RESET HWID</button>
-                  <button class="btn btn-sm btn-ghost" title="Extend Expiry" onclick="openExtendModal(${k.id}, '${k.user_key}')">+ EXTEND</button>
-                  <button class="btn btn-sm ${k.status === 'banned' ? 'btn-success' : 'btn-danger'}" onclick="toggleBan(${k.id})">
-                    ${k.status === 'banned' ? 'UNBAN' : 'BAN'}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
+        renderKeysList();
       } catch (err) {
         tb.innerHTML = `<tr><td colspan="8" style="color:var(--error); text-align:center; padding:20px">${err.message}</td></tr>`;
       }
     }
 
-    async function resetHwid(id) {
-      if (!confirm('Unbind all devices from this key? Customer can re-login on new phone.')) return;
+    // 1-Tap HWID Reset with zero confirm popups
+    async function resetHwid(id, btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'RESETTING...';
+      }
       try {
         await api(`/api/keys/${id}/reset-hwid`, { method: 'PUT' });
-        toast('HWID successfully reset!');
-        loadKeys();
+        toast('HWID Cleared! Customer can now login on new device.');
+        const keyItem = _keysCache.find(x => x.id === id);
+        if (keyItem) keyItem.bound_count = 0;
+        renderKeysList();
       } catch (err) {
         toast(err.message, 'error');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '1-TAP RESET';
+        }
       }
     }
 

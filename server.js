@@ -259,7 +259,7 @@ async function handleConnect(req, res) {
         token: `FKC_${cleanKey}_${now}`,
         exp: expIso,
         loader_name: loader.loader_name,
-        package_name: loader.package_name,
+        package_name: req.body?.package_name || req.query?.package_name || loader.package_name || '*',
         version: loader.app_version,
         max_devices: keyRecord.max_devices,
         duration_days: keyRecord.duration_days,
@@ -660,6 +660,8 @@ app.post('/api/referrals', authenticate, async (req, res) => {
 app.get('/api/keys', authenticate, async (req, res) => {
   try {
     const { loader_id, status } = req.query;
+    const loaderIdParam = loader_id ? parseInt(loader_id) : null;
+    const statusParam = status ? String(status).trim() : null;
     let query;
 
     if (req.user.role === 'superadmin') {
@@ -669,9 +671,8 @@ app.get('/api/keys', authenticate, async (req, res) => {
         FROM fkc.license_keys k
         JOIN fkc.loaders l ON k.loader_id = l.id
         JOIN fkc.users u ON k.creator_id = u.id
-        WHERE 1=1
-        ${loader_id ? sql`AND k.loader_id = ${parseInt(loader_id)}` : sql``}
-        ${status ? sql`AND k.status = ${status}` : sql``}
+        WHERE (${loaderIdParam}::int IS NULL OR k.loader_id = ${loaderIdParam}::int)
+          AND (${statusParam}::varchar IS NULL OR k.status = ${statusParam}::varchar)
         ORDER BY k.id DESC LIMIT 300
       `;
     } else if (req.user.role === 'owner') {
@@ -682,8 +683,8 @@ app.get('/api/keys', authenticate, async (req, res) => {
         JOIN fkc.loaders l ON k.loader_id = l.id
         JOIN fkc.users u ON k.creator_id = u.id
         WHERE k.owner_id = ${req.user.id}
-        ${loader_id ? sql`AND k.loader_id = ${parseInt(loader_id)}` : sql``}
-        ${status ? sql`AND k.status = ${status}` : sql``}
+          AND (${loaderIdParam}::int IS NULL OR k.loader_id = ${loaderIdParam}::int)
+          AND (${statusParam}::varchar IS NULL OR k.status = ${statusParam}::varchar)
         ORDER BY k.id DESC LIMIT 300
       `;
     } else if (req.user.role === 'admin') {
@@ -694,8 +695,8 @@ app.get('/api/keys', authenticate, async (req, res) => {
         JOIN fkc.loaders l ON k.loader_id = l.id
         JOIN fkc.users u ON k.creator_id = u.id
         WHERE (k.creator_id = ${req.user.id} OR u.admin_id = ${req.user.id})
-        ${loader_id ? sql`AND k.loader_id = ${parseInt(loader_id)}` : sql``}
-        ${status ? sql`AND k.status = ${status}` : sql``}
+          AND (${loaderIdParam}::int IS NULL OR k.loader_id = ${loaderIdParam}::int)
+          AND (${statusParam}::varchar IS NULL OR k.status = ${statusParam}::varchar)
         ORDER BY k.id DESC LIMIT 300
       `;
     } else {
@@ -706,8 +707,8 @@ app.get('/api/keys', authenticate, async (req, res) => {
         JOIN fkc.loaders l ON k.loader_id = l.id
         JOIN fkc.users u ON k.creator_id = u.id
         WHERE k.creator_id = ${req.user.id}
-        ${loader_id ? sql`AND k.loader_id = ${parseInt(loader_id)}` : sql``}
-        ${status ? sql`AND k.status = ${status}` : sql``}
+          AND (${loaderIdParam}::int IS NULL OR k.loader_id = ${loaderIdParam}::int)
+          AND (${statusParam}::varchar IS NULL OR k.status = ${statusParam}::varchar)
         ORDER BY k.id DESC LIMIT 300
       `;
     }
@@ -715,6 +716,7 @@ app.get('/api/keys', authenticate, async (req, res) => {
     const keys = await query;
     res.json({ keys });
   } catch (err) {
+    console.error('[GET /api/keys Error]', err);
     res.status(500).json({ error: err.message });
   }
 });
